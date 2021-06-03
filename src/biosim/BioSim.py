@@ -3,7 +3,9 @@ import random
 
 import numpy as np
 import matplotlib.pyplot as plt
-from .animals import Herbivore,set_params
+from .animals import set_params
+from .Cells import set_params
+from src.biosim.Island import Island
 
 
 class BioSim:
@@ -38,11 +40,9 @@ class BioSim:
         where img_number are consecutive image numbers starting from 0.
         img_dir and img_base must either be both None or both strings.
         """
-        self.row = len(island_map.splitlines())
-        self.cols = len(island_map.splitlines())
-        self.cells = [{'animals': [],'f_max' : 500}]
         self.ini_pop = ini_pop
         self.seed = seed
+        self.island = Island(island_map)
 
     def set_animal_parameters(self, species, params):
         """
@@ -59,6 +59,8 @@ class BioSim:
         :param landscape: String, code letter for landscape
         :param params: Dict with valid parameter specification for landscape
         """
+        set_params(landscape, params)
+
 
 
     def simulate(self, num_years):
@@ -77,43 +79,17 @@ class BioSim:
         # plt.show()
         random.seed(self.seed)
         for x in range(num_years):
-            new_borns = []
-            new_born_count = 0
-            dead_count = 0
-            self.cells[0]['f_max'] = 500
-            print ("Animal Count = ", len(self.cells[0]['animals']))
-            for y in range(len(self.cells[0]['animals'])):
-                animal = self.cells[0]['animals'][y]
-                animal.calculate_fitness()
-                feed_left = animal.feeds(self.cells[0]['f_max'])
-                self.cells[0]['f_max'] =  feed_left
-                animal.birth(len(self.cells[0]['animals']))
-                baby = animal.procreation()
-                if baby is not None:
-                    new_borns.append(baby)
-                animal.migration()
-                animal.comense_aging()
-                animal.comense_weight_loss()
-                animal.death()
-            dead_count = len([animal for animal in self.cells[0]['animals'] if animal.dead])
-            self.cells[0]['animals'] = [animal for animal in self.cells[0]['animals'] if not animal.dead]
-            if len(new_borns) > 0:
-                self.cells[0]['animals'].extend(new_borns)
+            print("Year:", x+1)
+            self.island.commence_annual_cycle()
+            self.num_animals
 
-            print("Dead:", dead_count)
-            print("Babies:", len(new_borns))
-
-    def add_population(self):
+    def add_population(self,population):
         """
         Add a population to the island
         :param population: List of dictionaries specifying population
         """
-        for i in self.ini_pop:
-            animals = i['pop']
-            for x in animals:
-                if x['species'] == 'Herbivore':
-                    obj = Herbivore(x['age'],x['weight'])
-                self.cells[0]['animals'].append(obj)
+        self.island.add_population(population)
+
 
     @property
     def year(self):

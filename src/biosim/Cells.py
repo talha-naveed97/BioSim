@@ -34,6 +34,7 @@ class Cell:
             animal.commence_aging()
             animal.commence_weight_loss()
             animal.death()
+        self.herbivores = [animal for animal in self.herbivores if not animal.dead]
 
         for animal in self.carnivores:
             animal.calculate_fitness()
@@ -44,6 +45,13 @@ class Cell:
             animal.commence_aging()
             animal.commence_weight_loss()
             animal.death()
+        self.carnivores = [animal for animal in self.carnivores if not animal.dead]
+
+        self.herbivores.extend(new_born_herbivores)
+        self.carnivores.extend(new_born_carnivores)
+
+    def reset_cell(self):
+        self.food_status = self.f_max
 
 
 class Water(Cell):
@@ -76,3 +84,13 @@ class Desert(Cell):
 
     def __init__(self, loc):
         super().__init__(loc)
+
+def set_params(land_type, params):
+    if land_type == 'W':
+        Water.update_defaults(params)
+    elif land_type == 'H':
+        Highland.update_defaults(params)
+    elif land_type == 'L':
+        Lowland.update_defaults(params)
+    elif land_type == 'D':
+        Desert.update_defaults(params)

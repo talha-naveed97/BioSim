@@ -2,28 +2,29 @@
 
 import textwrap
 from src.biosim.BioSim import BioSim
-from src.biosim.Island import Island
 
 geogr = """WWW
            WLW
            WWW"""
 
 geogr = textwrap.dedent(geogr)
-
-island = Island(geogr)
-
-island.make_map()
-
-# ini_herbs = [{'loc': (2, 2),
-#               'pop': [{'species': 'Herbivore',
-#                        'age': 5,
-#                        'weight': 20}
-#                       for _ in range(30)]}]
 #
-# sim = BioSim(island_map = geogr, ini_pop = ini_herbs, seed=100)
+# island = Island(geogr)
 #
-# sim.set_animal_parameters('Herbivore', {'zeta': 3.5, 'xi': 1.2})
-#
-# sim.add_population()
+# island.make_map()
 
-# sim.simulate(100)
+ini_herbs = [{'loc': (2, 2),
+              'pop': [{'species': 'Herbivore',
+                       'age': 5,
+                       'weight': 20}
+                      for _ in range(30)]}]
+
+sim = BioSim(island_map = geogr, ini_pop = ini_herbs, seed=100)
+
+sim.set_animal_parameters('Herbivore', {'zeta': 3.5, 'xi': 1.2})
+
+sim.set_landscape_parameters('L', {'f_max': 700})
+
+sim.add_population(ini_herbs)
+
+sim.simulate(100)

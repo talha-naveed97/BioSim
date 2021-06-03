@@ -73,10 +73,10 @@ class Animals:
         else:
             self.dead = False
 
-    def comense_aging(self):
+    def commence_aging(self):
         self.age += 1
 
-    def comense_weight_loss(self):
+    def commence_weight_loss(self):
         self.weight -= self.weight * self.guideline_params["eta"]
         if self.weight <= 0:
             self.death()
