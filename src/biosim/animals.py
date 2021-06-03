@@ -46,7 +46,8 @@ class Animals:
         else:
             self.gives_birth = False
 
-    def procreation(self):
+    def procreation(self, cell_animal_count):
+        self.birth(cell_animal_count)
         if self.gives_birth:
             baby_age = 0
             baby_weight = gauss(self.guideline_params["w_birth"], self.guideline_params["sigma_birth"])
