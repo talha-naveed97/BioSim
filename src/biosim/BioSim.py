@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import random
+
 import numpy as np
 import matplotlib.pyplot as plt
 from .animals import Herbivore,set_params
@@ -40,6 +42,7 @@ class BioSim:
         self.cols = len(island_map.splitlines())
         self.cells = [{'animals': [],'f_max' : 500}]
         self.ini_pop = ini_pop
+        self.seed = seed
 
     def set_animal_parameters(self, species, params):
         """
@@ -63,30 +66,42 @@ class BioSim:
         Run simulation while visualizing the result.
         :param num_years: number of years to simulate
         """
-        print(self.row)
-        print(self.cols)
-        image = np.zeros(self.row * self.cols)
-        image[::2] = np.random.random(self.row * self.cols // 2 + 1)
-
-        # Reshape things into a 9x9 grid.
-        image = image.reshape((self.row, self.cols))
-        plt.matshow(image)
-        plt.show()
-
+        # print(self.row)
+        # print(self.cols)
+        # image = np.zeros(self.row * self.cols)
+        # image[::2] = np.random.random(self.row * self.cols // 2 + 1)
+        #
+        # # Reshape things into a 9x9 grid.
+        # image = image.reshape((self.row, self.cols))
+        # plt.matshow(image)
+        # plt.show()
+        random.seed(self.seed)
         for x in range(num_years):
-            animals_born = 0
+            new_borns = []
+            new_born_count = 0
+            dead_count = 0
+            self.cells[0]['f_max'] = 500
+            print ("Animal Count = ", len(self.cells[0]['animals']))
             for y in range(len(self.cells[0]['animals'])):
                 animal = self.cells[0]['animals'][y]
                 animal.calculate_fitness()
                 feed_left = animal.feeds(self.cells[0]['f_max'])
                 self.cells[0]['f_max'] =  feed_left
                 animal.birth(len(self.cells[0]['animals']))
-                animal.procreation()
+                baby = animal.procreation()
+                if baby is not None:
+                    new_borns.append(baby)
                 animal.migration()
                 animal.comense_aging()
                 animal.comense_weight_loss()
                 animal.death()
+            dead_count = len([animal for animal in self.cells[0]['animals'] if animal.dead])
+            self.cells[0]['animals'] = [animal for animal in self.cells[0]['animals'] if not animal.dead]
+            if len(new_borns) > 0:
+                self.cells[0]['animals'].extend(new_borns)
 
+            print("Dead:", dead_count)
+            print("Babies:", len(new_borns))
 
     def add_population(self):
         """

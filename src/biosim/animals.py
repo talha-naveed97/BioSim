@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import math
+from random import random,gauss
 
 
 class Animals:
@@ -27,27 +28,38 @@ class Animals:
 
     def migration(self):
         migration_prob = self.guideline_params["mu"] * self.fitness
-        if migration_prob > 0.50:
+        if migration_prob > random():
             self.migrates = True
         else:
             self.migrates = False
 
     def birth(self, cell_animal_count):
-        if cell_animal_count > 1 and self.weight > self.guideline_params["zeta"] * (self.guideline_params["w_birth"]
-                                                                                 + self.guideline_params[
-                                                                                     "sigma_birth"]):
+        if cell_animal_count > 1 and self.weight >= self.guideline_params["zeta"] * (self.guideline_params["w_birth"]
+                                                                                    + self.guideline_params[
+                                                                                        "sigma_birth"]):
             birth_prob = min(1, self.guideline_params["gamma"] * self.fitness * (cell_animal_count - 1))
         else:
             birth_prob = 0
 
-        if birth_prob > 0.50:
+        if birth_prob > random():
             self.gives_birth = True
         else:
             self.gives_birth = False
 
     def procreation(self):
         if self.gives_birth:
-            print('add animal')
+            baby_age = 0
+            baby_weight = gauss(self.guideline_params["w_birth"], self.guideline_params["sigma_birth"])
+            mother_weight_loss = self.guideline_params["xi"] * baby_weight
+            if self.weight >= mother_weight_loss:
+                baby = self.__class__(baby_age, baby_weight)
+                baby.calculate_fitness()
+                self.weight -= mother_weight_loss
+                return baby
+            else:
+                return None
+        else:
+            return  None
 
     def death(self):
         if self.weight == 0:
@@ -55,9 +67,8 @@ class Animals:
         else:
             death_prob = self.guideline_params["omega"] * (1 - self.fitness)
 
-        if death_prob > 0.50:
+        if death_prob > random():
             self.dead = True
-            print('dead')
         else:
             self.dead = False
 
@@ -103,7 +114,7 @@ class Herbivore(Animals):
         return feed_left
 
 
-def set_params(species,params):
+def set_params(species, params):
     if species == 'Herbivore':
         Herbivore.update_defaults(params)
     else:
