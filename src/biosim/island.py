@@ -1,4 +1,4 @@
-from .Cells import Water, Lowland, Highland, Desert
+from .cells import Water, Lowland, Highland, Desert
 import random
 
 class Island:

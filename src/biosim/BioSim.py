@@ -4,8 +4,8 @@ import random
 import numpy as np
 import matplotlib.pyplot as plt
 from .animals import set_animal_params
-from .Cells import set_cell_params
-from .Island import Island
+from .cells import set_cell_params
+from .island import Island
 
 
 class BioSim:
