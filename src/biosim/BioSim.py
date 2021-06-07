@@ -3,8 +3,8 @@ import random
 
 import numpy as np
 import matplotlib.pyplot as plt
-from .animals import set_params
-from .Cells import set_params
+from .animals import set_animal_params
+from .Cells import set_cell_params
 from src.biosim.Island import Island
 
 
@@ -50,7 +50,7 @@ class BioSim:
         :param species: String, name of animal species
         :param params: Dict with valid parameter specification for species
         """
-        set_params(species,params)
+        set_animal_params(species,params)
 
 
     def set_landscape_parameters(self, landscape, params):
@@ -59,7 +59,7 @@ class BioSim:
         :param landscape: String, code letter for landscape
         :param params: Dict with valid parameter specification for landscape
         """
-        set_params(landscape, params)
+        set_cell_params(landscape, params)
 
 
 
@@ -79,8 +79,9 @@ class BioSim:
         # plt.show()
         random.seed(self.seed)
         for x in range(num_years):
-            print("Year:", x+1)
-            self.island.commence_annual_cycle()
+            year_number = x+1
+            print("Year:", year_number)
+            self.island.commence_annual_cycle(year_number)
             self.num_animals
 
     def add_population(self,population):
