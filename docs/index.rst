@@ -12,7 +12,8 @@ This project is sponsored by Pylandia’s Environmental Protection Agency.
    :maxdepth: 2
    :caption: Contents:
 
-
+   geography_and_animals
+   simulation
 
 Indices and tables
 ==================
