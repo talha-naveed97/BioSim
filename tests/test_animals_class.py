@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Test set for BioSim class interface for INF200 January 2021.
+Test set for Animals class for INF200 June 2021.
 """
 
 from src.biosim.animals import *
