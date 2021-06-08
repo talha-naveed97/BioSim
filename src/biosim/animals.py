@@ -27,7 +27,7 @@ class Animals:
             self.fitness = 0
         else:
             q_age = 1 / (1 + math.exp(self.guideline_params["phi_age"] * (self.age - self.guideline_params["a_half"])))
-            q_weight = 1 / (1 + math.exp(
+            q_weight = 1 / (1 + math.exp(-
                 self.guideline_params["phi_weight"] * (self.weight - self.guideline_params["w_half"])))
             self.fitness = q_age * q_weight
 
@@ -152,7 +152,7 @@ class Carnivore(Animals):
                 eating_probability = 0
                 continue_eating_cycle = False
                 break
-            elif fitness_difference > 0 and fitness_difference < self.guideline_params["DeltaPhiMax"]:
+            elif 0 < fitness_difference < self.guideline_params["DeltaPhiMax"]:
                 eating_probability = fitness_difference / self.guideline_params["DeltaPhiMax"]
             else:
                 eating_probability = 1

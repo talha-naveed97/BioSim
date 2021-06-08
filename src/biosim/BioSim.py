@@ -82,7 +82,9 @@ class BioSim:
             year_number = x+1
             print("Year:", year_number)
             self.island.commence_annual_cycle(year_number)
-            self.num_animals
+            annual_herbivore_count, annual_carnivore_count = self.num_animals_per_species
+            self.island.update_number_of_species_graph(year_number,num_years,annual_herbivore_count,
+                                                       annual_carnivore_count)
 
     def add_population(self,population):
         """
@@ -103,6 +105,9 @@ class BioSim:
     @property
     def num_animals_per_species(self):
         """Number of animals per species in island, as dictionary."""
+        annual_herbivore_count, annual_carnivore_count = self.island.get_total_species_count()
+        print (annual_herbivore_count,annual_carnivore_count)
+        return annual_herbivore_count,annual_carnivore_count
 
     def make_movie(self):
         """Create MPEG4 movie from visualization images saved."""
