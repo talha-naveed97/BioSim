@@ -69,14 +69,23 @@ class Cell:
             animal.calculate_fitness()
 
     def cell_annual_lifecycle(self):
-        new_born_herbivores = []
-        new_born_carnivores = []
+        """
+        Runs the annual cycle for the a single cell:
+            - Feeding
+            - Procreating
+            - Migration
+            - Aging
+            - Loss of weight
+            - Death
+        """
 
         # Calculate fitness of Animals in Cell
         self.calculate_cell_fitness()
+
         # Sort animals in cell by fitness
         self.herbivores.sort(key=lambda x: x.fitness, reverse=False)
         self.carnivores.sort(key=lambda x: x.fitness, reverse=True)
+
         # Feeding
         for animal in self.herbivores:
             feed_left = animal.feeds(self.food_status)
@@ -86,27 +95,33 @@ class Cell:
             self.herbivores = [animal for animal in self.herbivores if not animal.dead]
             if not continue_eating_cycle:
                 break
+
         # Procreation
+        newborn_herbivores = []
+        newborn_carnivores = []
         for animal in self.herbivores:
             baby = animal.procreation(len(self.herbivores))
             if baby is not None:
-                new_born_herbivores.append(baby)
+                newborn_herbivores.append(baby)
         for animal in self.carnivores:
             baby = animal.procreation(len(self.carnivores))
             if baby is not None:
-                new_born_carnivores.append(baby)
+                newborn_carnivores.append(baby)
+
         # Migration, Aging, Weight Loss, Death
         for animal in self.herbivores + self.carnivores:
             animal.migration()
             animal.commence_aging()
             animal.commence_weight_loss()
             animal.death()
+
         # Remove dead animals from List
         self.herbivores = [animal for animal in self.herbivores if not animal.dead]
         self.carnivores = [animal for animal in self.carnivores if not animal.dead]
-        # Add New Borns
-        self.herbivores.extend(new_born_herbivores)
-        self.carnivores.extend(new_born_carnivores)
+
+        # Add Newborns
+        self.herbivores.extend(newborn_herbivores)
+        self.carnivores.extend(newborn_carnivores)
 
         # for animal in self.herbivores:
         #     animal.calculate_fitness()
