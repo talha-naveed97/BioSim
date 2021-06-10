@@ -1,7 +1,33 @@
-from .animals import Herbivore,Carnivore
+# -*- coding: utf-8 -*-
+
+"""
+This module implements the Cell class representing a single square (or cell) on Rossumøya island.
+There are four subclasses in this module which represent the four types of cells on the island viz.
+Water, Desert, Highland, and Lowland.
+
+"""
+
+from .animals import Herbivore, Carnivore
 
 
 class Cell:
+    """
+
+    Parameters
+    ----------
+    loc : tuple
+        Location of cell on the island.
+
+    Attributes
+    ----------------
+    herbivores
+        List of herbivores present in the cell.
+    carnivores
+        List of carnivores present in the cell.
+    food_status
+        Amount of food available in the cell.
+    """
+
     def __init__(self, loc):
         self.loc = loc
         self.herbivores = []
@@ -10,14 +36,31 @@ class Cell:
 
     @classmethod
     def update_defaults(cls, params):
+        """
+        Updates the default amount of fodder for cells.
+
+        Parameters
+        ----------
+        params : dict
+            Dictionary {'f_max': value} that specifies the new default value of fodder in Lowland and Highland
+            cell types.
+        """
         cls.f_max = params["f_max"]
 
     def add_animal(self, animals):
+        """
+        Add animals to their corresponding list (herbivores or carnivores).
+
+        Parameters
+        ----------
+        animals : list
+            list of dictionaries that specify the species, age, and weight of each animal.
+        """
         for x in animals:
             if x['species'] == 'Herbivore':
                 obj = Herbivore(x['age'], x['weight'])
                 self.herbivores.append(obj)
-            else:
+            elif x['species'] == 'Carnivore':
                 obj = Carnivore(x['age'], x['weight'])
                 self.carnivores.append(obj)
 
@@ -93,42 +136,56 @@ class Cell:
         # self.carnivores.extend(new_born_carnivores)
 
     def get_migration_possibilities(self):
-        return [(self.loc[0] - 1,self.loc[1]), (self.loc[0] + 1,self.loc[1]),
-                (self.loc[0],self.loc[1] - 1), (self.loc[0],self.loc[1] + 1)]
+        return [(self.loc[0] - 1, self.loc[1]), (self.loc[0] + 1, self.loc[1]),
+                (self.loc[0], self.loc[1] - 1), (self.loc[0], self.loc[1] + 1)]
+
     def reset_cell(self):
         self.food_status = self.f_max
 
 
 class Water(Cell):
-    f_max = 0
+    """
+    'Water' cell type, does not allow animals to enter and has no fodder.
+    """
+    f_max = 0.
     allows_animal = False
 
     def __init__(self, loc):
-        super().__init__(loc)
+        super(Water, self).__init__(loc)
 
 
 class Lowland(Cell):
-    f_max = 800
+    """
+    'Lowland' cell type, allows animals to enter and has fodder.
+    """
+    f_max = 800.
     allows_animal = True
 
     def __init__(self, loc):
-        super().__init__(loc)
+        super(Lowland, self).__init__(loc)
 
 
 class Highland(Cell):
-    f_max = 300
+    """
+    'Highland' cell type, allows animals to enter and has less fodder than Lowland.
+    """
+    f_max = 300.
     allows_animal = True
 
     def __init__(self, loc):
-        super().__init__(loc)
+        super(Highland, self).__init__(loc)
 
 
 class Desert(Cell):
-    f_max = 0
+    """
+    'Desert' cell type: allows animals to enter, but has no fodder.
+    """
+    f_max = 0.
     allows_animal = True
 
     def __init__(self, loc):
-        super().__init__(loc)
+        super(Desert, self).__init__(loc)
+
 
 def set_cell_params(land_type, params):
     if land_type == 'W':
