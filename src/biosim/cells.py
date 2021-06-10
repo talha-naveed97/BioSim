@@ -28,7 +28,8 @@ class Cell:
     def cell_annual_lifecycle(self):
         new_born_herbivores = []
         new_born_carnivores = []
-
+        fitness_herbivores = []
+        fitness_carnivores = []
         # Calculate fitness of Animals in Cell
         self.calculate_cell_fitness()
         # Sort animals in cell by fitness
@@ -65,6 +66,13 @@ class Cell:
         self.herbivores.extend(new_born_herbivores)
         self.carnivores.extend(new_born_carnivores)
 
+        return [a.fitness for a in self.herbivores],\
+               [a.fitness for a in self.carnivores],\
+               [a.age for a in self.herbivores],\
+               [a.age for a in self.carnivores],\
+                [a.weight for a in self.herbivores],\
+                [a.weight for a in self.carnivores],\
+
     def get_migration_possibilities(self):
         return [(self.loc[0] - 1, self.loc[1]), (self.loc[0] + 1, self.loc[1]),
                 (self.loc[0], self.loc[1] - 1), (self.loc[0], self.loc[1] + 1)]
@@ -73,13 +81,12 @@ class Cell:
         self.food_status = self.f_max
 
 
+
 class Water(Cell):
     f_max = 0
     allows_animal = False
     rgb = (0.0, 0.0, 1.0)
 
-    def __init__(self, loc):
-        super().__init__(loc)
 
 
 class Lowland(Cell):
@@ -87,8 +94,6 @@ class Lowland(Cell):
     allows_animal = True
     rgb = (0.0, 0.6, 0.0)
 
-    def __init__(self, loc):
-        super().__init__(loc)
 
 
 class Highland(Cell):
@@ -96,17 +101,12 @@ class Highland(Cell):
     allows_animal = True
     rgb = (0.5, 1.0, 0.5)
 
-    def __init__(self, loc):
-        super().__init__(loc)
 
 
 class Desert(Cell):
     f_max = 0
     allows_animal = True
     rgb = (1.0, 1.0, 0.5)
-
-    def __init__(self, loc):
-        super().__init__(loc)
 
 
 def set_cell_params(land_type, params):

@@ -8,7 +8,7 @@ Full island simulation with herbivores and carnivores.
 __author__ = 'Hans Ekkehard Plesser, NMBU'
 
 import textwrap
-from biosim.simulation import BioSim
+from src.biosim.BioSim import BioSim
 
 if __name__ == '__main__':
 
@@ -53,6 +53,7 @@ if __name__ == '__main__':
                              'weight': {'max': 60, 'delta': 2}},
                  img_dir='results',
                  img_base='sample')
+    sim.add_population(ini_herbs + ini_carns)
     sim.simulate(400)
     sim.make_movie()
 

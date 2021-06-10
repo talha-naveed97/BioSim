@@ -9,6 +9,10 @@ from .island import Island
 
 
 class BioSim:
+    default_cmax = {'Herbivore': 200, 'Carnivore': 50}
+    default_hist_specs = {'fitness': {'max': 1.0, 'delta': 0.05},
+                          'age': {'max': 60.0, 'delta': 2},
+                          'weight': {'max': 80, 'delta': 2}}
     def __init__(self, island_map, ini_pop, seed,
                  vis_years=1, ymax_animals=None, cmax_animals=None, hist_specs=None,
                  img_dir=None, img_base=None, img_fmt='png', img_years=None,
@@ -42,6 +46,17 @@ class BioSim:
         """
         self.ini_pop = ini_pop
         self.seed = seed
+        if cmax_animals is None:
+           self.c_max_animal = self.default_cmax
+        else:
+            self.c_max_animal = cmax_animals
+
+        if hist_specs is None:
+           self.hist_specs = self.default_hist_specs
+        else:
+            self.hist_specs = hist_specs
+
+
         self.island = Island(island_map)
 
     def set_animal_parameters(self, species, params):
@@ -85,6 +100,11 @@ class BioSim:
             annual_herbivore_count, annual_carnivore_count = self.num_animals_per_species
             self.island.update_number_of_species_graph(year_number,num_years,annual_herbivore_count,
                                                        annual_carnivore_count)
+            herbivore_distribution,carnivore_distribution = self.island.get_distributions()
+            self.island.update_system_map(herbivore_distribution, carnivore_distribution,self.c_max_animal)
+            self.island.fitness_histogram(year_number,self.hist_specs['fitness'])
+            self.island.age_histogram(year_number, self.hist_specs['age'])
+            self.island.weight_histogram(year_number, self.hist_specs['weight'])
 
     def add_population(self,population):
         """
