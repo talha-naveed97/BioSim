@@ -31,11 +31,12 @@ class Island:
         self.year_counter = None
         self.year_txt = None
         self.year_template = 'Year: {:5d}'
+        self.fig = None
 
     def setup_visualization(self, rows, cols, total_years, cmap, hist_specs):
-        fig = plt.figure()
+        self.fig = plt.figure()
         for plot in self.plots:
-            ax = fig.add_subplot(rows, cols, plot['Position'])
+            ax = self.fig.add_subplot(rows, cols, plot['Position'])
             plot['Plot'] = ax
         self.make_map()
         self.update_number_of_species_graph(True, 0, total_years, 0, 0)
@@ -43,7 +44,7 @@ class Island:
         self.update_fitness_histogram(hist_specs['fitness'])
         self.update_weight_histogram(hist_specs['weight'])
         self.update_age_histogram(hist_specs['age'])
-        self.year_counter = fig.add_axes([0.4, 0.8, 0.2, 0.2])  # llx, lly, w, h
+        self.year_counter = self.fig.add_axes([0.4, 0.8, 0.2, 0.2])  # llx, lly, w, h
         self.year_counter.axis('off')  # turn off coordinate system
         self.year_txt = self.year_counter.text(0.5, 0.5, self.year_template.format(0),
                horizontalalignment='center',
@@ -142,8 +143,9 @@ class Island:
         ax.set_yticklabels(range(1, 1 + len(self.map_rgb)))
 
     def show_plots(self):
+        #plt.show(block=False)
+        self.fig.canvas.flush_events()
         plt.pause(1e-6)
-        plt.show(block=False)
 
     def get_total_species_count(self):
         total_herbivores = sum(len(c.herbivores) for c in self.cell_list)
