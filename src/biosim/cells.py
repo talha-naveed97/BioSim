@@ -127,8 +127,9 @@ class Cell:
                [a.fitness for a in self.carnivores],\
                [a.age for a in self.herbivores],\
                [a.age for a in self.carnivores],\
-                [a.weight for a in self.herbivores],\
-                [a.weight for a in self.carnivores],\
+               [a.weight for a in self.herbivores],\
+               [a.weight for a in self.carnivores],\
+
 
     def get_migration_possibilities(self):
         return [(self.loc[0] - 1, self.loc[1]), (self.loc[0] + 1, self.loc[1]),
@@ -136,7 +137,6 @@ class Cell:
 
     def reset_cell(self):
         self.food_status = self.f_max
-
 
 
 class Water(Cell):
@@ -148,7 +148,6 @@ class Water(Cell):
     rgb = (0.0, 0.0, 1.0)
 
 
-
 class Lowland(Cell):
     """
     'Lowland' cell type, allows animals to enter and has fodder.
@@ -158,7 +157,6 @@ class Lowland(Cell):
     rgb = (0.0, 0.6, 0.0)
 
 
-
 class Highland(Cell):
     """
     'Highland' cell type, allows animals to enter and has less fodder than Lowland.
@@ -166,7 +164,6 @@ class Highland(Cell):
     f_max = 300.
     allows_animal = True
     rgb = (0.5, 1.0, 0.5)
-
 
 
 class Desert(Cell):
