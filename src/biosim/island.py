@@ -46,9 +46,9 @@ class Island:
         self.year_counter = fig.add_axes([0.4, 0.8, 0.2, 0.2])  # llx, lly, w, h
         self.year_counter.axis('off')  # turn off coordinate system
         self.year_txt = self.year_counter.text(0.5, 0.5, self.year_template.format(0),
-               horizontalalignment='center',
-               verticalalignment='center',
-               transform=self.year_counter.transAxes)
+                                               horizontalalignment='center',
+                                               verticalalignment='center',
+                                               transform=self.year_counter.transAxes)
         self.show_plots()
 
     def add_cells(self):
@@ -100,7 +100,7 @@ class Island:
             if year_number > 1:
                 self.commence_migration(cell)
             herbivores_fitness, carnivores_fitness, herbivores_age, \
-            carnivores_age, herbivores_weight, carnivores_weight = cell.cell_annual_lifecycle()
+                carnivores_age, herbivores_weight, carnivores_weight = cell.cell_annual_lifecycle()
             self.fitness_values_herbivores.extend(herbivores_fitness)
             self.fitness_values_carnivores.extend(carnivores_fitness)
             self.age_values_herbivores.extend(herbivores_age)
@@ -113,9 +113,9 @@ class Island:
         animals_for_migration = [animal for animal in cell.herbivores + cell.carnivores if
                                  animal.migrates]
         if len(animals_for_migration) > 0:
-            migration_possibilies = cell.get_migration_possibilities()
+            migration_possibilities = cell.get_migration_possibilities()
             for animal in animals_for_migration:
-                migrating_to = self.get_random_cell(migration_possibilies)
+                migrating_to = self.get_random_cell(migration_possibilities)
                 migrating_cell = [cl for cl in self.cell_list
                                   if cl.loc[0] == migrating_to[0] and cl.loc[1] == migrating_to[1]][0]
                 if migrating_cell.allows_animal:
@@ -124,8 +124,8 @@ class Island:
                     else:
                         migrating_cell.carnivores.append(animal)
 
-    def get_random_cell(self, possibilies):
-        return random.choice(possibilies)
+    def get_random_cell(self, possibilities):
+        return random.choice(possibilities)
 
     def make_map(self):
         ax = [pt['Plot'] for pt in self.plots if pt['Name'] == 'Geography'][0]
@@ -241,11 +241,10 @@ class Island:
                 label=('Herbivores', 'Carnivores'), color=('g', 'r'))
         ax.legend()
 
-    def update_visualiztion(self, year, total_years, herbivore_count, carnivores_count, cmax_animals, hist_specs):
+    def update_visualization(self, year, total_years, herbivore_count, carnivores_count, cmax_animals, hist_specs):
         self.update_number_of_species_graph(False, year, total_years, herbivore_count, carnivores_count)
         self.update_distribution_map(cmax_animals)
         self.update_fitness_histogram(hist_specs['fitness'])
         self.update_weight_histogram(hist_specs['weight'])
         self.update_age_histogram(hist_specs['age'])
         self.year_txt.set_text(self.year_template.format(year))
-

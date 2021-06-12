@@ -26,6 +26,7 @@ class Cell:
         List of carnivores present in the cell.
     food_status
         Amount of food available in the cell.
+
     """
 
     def __init__(self, loc):
@@ -37,24 +38,28 @@ class Cell:
     @classmethod
     def update_defaults(cls, params):
         """
-        Updates the default amount of fodder for cells.
+
+        Update default amount of fodder for cells.
 
         Parameters
         ----------
         params : dict
             Dictionary {'f_max': value} that specifies the new default value of fodder in Lowland and Highland
             cell types.
+
         """
         cls.f_max = params["f_max"]
 
     def add_animal(self, animals):
         """
+
         Add animals to their corresponding list (herbivores or carnivores).
 
         Parameters
         ----------
         animals : list
             list of dictionaries that specify the species, age, and weight of each animal.
+
         """
         for x in animals:
             if x['species'] == 'Herbivore':
@@ -66,7 +71,9 @@ class Cell:
 
     def calculate_cell_fitness(self):
         """
+
         Calculate fitness of each animal in the lists for herbivores and carnivores.
+
         """
 
         for animal in self.herbivores + self.carnivores:
@@ -74,6 +81,7 @@ class Cell:
 
     def cell_annual_lifecycle(self):
         """
+
         Run the annual cycle for a single cell in following order:
             - Feeding
             - Procreating
@@ -157,14 +165,18 @@ class Cell:
 
     def reset_cell(self):
         """
+
         Reset the amount of fodder available in cells.
+
         """
         self.food_status = self.f_max
 
 
 class Water(Cell):
     """
+
     'Water' cell type: does not allow animals to enter and has no fodder.
+
     """
     f_max = 0.
     allows_animal = False
@@ -173,7 +185,9 @@ class Water(Cell):
 
 class Lowland(Cell):
     """
+
     'Lowland' cell type: allows animals to enter and has fodder.
+
     """
     f_max = 800.
     allows_animal = True
@@ -182,7 +196,9 @@ class Lowland(Cell):
 
 class Highland(Cell):
     """
+
     'Highland' cell type: allows animals to enter and has less fodder than Lowland.
+
     """
     f_max = 300.
     allows_animal = True
@@ -191,7 +207,9 @@ class Highland(Cell):
 
 class Desert(Cell):
     """
+
     'Desert' cell type: allows animals to enter, but has no fodder.
+
     """
     f_max = 0.
     allows_animal = True
@@ -200,17 +218,18 @@ class Desert(Cell):
 
 def set_cell_params(land_type, params):
     """
+
     Set the maximum amount of fodder in cells.
 
     Parameters
     ----------
     land_type : str
-        'L' - 'Lowland' cell type
-        'H' - 'Highland' cell type
+        {'L' for Lowland, 'H' for Highland}
 
     params : dict
-        Dictionary {'f_max': value} that specifies the new default value of fodder in Lowland and Highland
-        cell types.
+        {'f_max': value}, Dictionary that specifies the new default value of fodder in
+        Lowland and Highland cell types.
+
     """
 
     if land_type == 'H':
