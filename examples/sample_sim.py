@@ -53,7 +53,7 @@ if __name__ == '__main__':
                              'weight': {'max': 60, 'delta': 2}},
                  img_dir='results',
                  img_base='sample')
-    sim.add_population(ini_herbs + ini_carns)
+    #sim.add_population(ini_herbs + ini_carns)
     sim.simulate(400)
     sim.make_movie()
 

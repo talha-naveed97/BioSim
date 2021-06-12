@@ -43,19 +43,32 @@ class Cell:
         self.carnivores.sort(key=lambda x: x.fitness, reverse=True)
 
         for animal in self.carnivores:
+            dummy = len(self.herbivores)
             continue_eating_cycle = animal.feeds(self.herbivores)
             self.herbivores = [animal for animal in self.herbivores if not animal.dead]
+            if dummy < len(self.herbivores):
+                raise ValueError(dummy,self.herbivores)
             if not continue_eating_cycle:
                 break
         # Procreation
-        for animal in self.herbivores:
-            baby = animal.procreation(len(self.herbivores))
-            if baby is not None:
-                new_born_herbivores.append(baby)
-        for animal in self.carnivores:
-            baby = animal.procreation(len(self.carnivores))
-            if baby is not None:
-                new_born_carnivores.append(baby)
+        self.procreates(len(self.herbivores),len(self.carnivores))
+        # for animal in self.herbivores:
+        #     baby = animal.procreation(len(self.herbivores))
+        #     if baby is not None:
+        #         new_born_herbivores.append(baby)
+        # for animal in self.carnivores:
+        #     baby = animal.procreation(len(self.carnivores))
+        #     if baby is not None:
+        #         new_born_carnivores.append(baby)
+
+        # # Add New Borns
+        # self.herbivores.extend(new_born_herbivores)
+        # self.carnivores.extend(new_born_carnivores)
+        # for baby in new_born_herbivores:
+        #     baby = animal.procreation(len(self.herbivores))
+        #     if baby is not None:
+        #         new_born_herbivores.append(baby)
+
         # Migration, Aging, Weight Loss, Death
         for animal in self.herbivores + self.carnivores:
             animal.migration()
@@ -65,9 +78,7 @@ class Cell:
         # Remove dead animals from List
         self.herbivores = [animal for animal in self.herbivores if not animal.dead]
         self.carnivores = [animal for animal in self.carnivores if not animal.dead]
-        # Add New Borns
-        self.herbivores.extend(new_born_herbivores)
-        self.carnivores.extend(new_born_carnivores)
+
 
         return [a.fitness for a in self.herbivores],\
                [a.fitness for a in self.carnivores],\
@@ -79,6 +90,25 @@ class Cell:
     def get_migration_possibilities(self):
         return [(self.loc[0] - 1, self.loc[1]), (self.loc[0] + 1, self.loc[1]),
                 (self.loc[0], self.loc[1] - 1), (self.loc[0], self.loc[1] + 1)]
+
+    def procreates(self,number_of_herbs,number_of_carns):
+        index = 0
+        while index < len(self.herbivores):
+            animal = self.herbivores[index]
+            baby = animal.procreation(number_of_herbs)
+            if baby is not None:
+                self.herbivores.append(baby)
+            index += 1
+        index = 0
+        while index < len(self.carnivores):
+            animal = self.carnivores[index]
+            baby = animal.procreation(number_of_carns)
+            if baby is not None:
+                self.carnivores.append(baby)
+            index += 1
+
+
+
 
     def reset_cell(self):
         self.food_status = self.f_max

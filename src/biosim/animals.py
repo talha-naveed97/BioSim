@@ -64,6 +64,7 @@ class Animals:
                 baby = self.__class__(baby_age, baby_weight)
                 self.weight -= mother_weight_loss
                 self.calculate_fitness()
+                baby.calculate_fitness()
                 return baby
             else:
                 return None
@@ -118,8 +119,9 @@ class Herbivore(Animals):
         self.weight += F * self.guideline_params["beta"]
         self.calculate_fitness()
         feed_left = cell_food_amount - F
-        if feed_left <= 0:
+        if feed_left < 0:
             feed_left = 0
+            raise ValueError
         return feed_left
 
 

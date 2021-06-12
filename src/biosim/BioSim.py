@@ -59,6 +59,9 @@ class BioSim:
 
         self.island = Island(island_map)
 
+        if ini_pop is not None:
+            self.add_population(ini_pop)
+
     def set_animal_parameters(self, species, params):
         """
         Set parameters for animal species.

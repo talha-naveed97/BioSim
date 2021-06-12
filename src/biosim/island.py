@@ -98,6 +98,8 @@ class Island:
             # print("Cell Location:", cell.loc)
             # print("Total Herbivore In Cell:", len(cell.herbivores))
             # print("Total Carnivore In Cell:", len(cell.carnivores))
+            if not cell.allows_animal:
+                continue
             if year_number > 1:
                 self.commence_migration(cell)
             herbivores_fitness, carnivores_fitness, herbivores_age, \
