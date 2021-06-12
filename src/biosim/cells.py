@@ -199,11 +199,23 @@ class Desert(Cell):
 
 
 def set_cell_params(land_type, params):
-    if land_type == 'W':
-        Water.update_defaults(params)
-    elif land_type == 'H':
+    """
+    Set the maximum amount of fodder in cells.
+
+    Parameters
+    ----------
+    land_type : str
+        'L' - 'Lowland' cell type
+        'H' - 'Highland' cell type
+
+    params : dict
+        Dictionary {'f_max': value} that specifies the new default value of fodder in Lowland and Highland
+        cell types.
+    """
+
+    if land_type == 'H':
         Highland.update_defaults(params)
     elif land_type == 'L':
         Lowland.update_defaults(params)
-    elif land_type == 'D':
-        Desert.update_defaults(params)
+    else:
+        pass
