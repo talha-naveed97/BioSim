@@ -27,7 +27,7 @@ class Animals:
             self.fitness = 0
         else:
             q_age = 1 / (1 + math.exp(self.guideline_params["phi_age"] * (self.age - self.guideline_params["a_half"])))
-            q_weight = 1 / (1 + math.exp(
+            q_weight = 1 / (1 + math.exp(-
                 self.guideline_params["phi_weight"] * (self.weight - self.guideline_params["w_half"])))
             self.fitness = q_age * q_weight
 
@@ -59,8 +59,8 @@ class Animals:
             mother_weight_loss = self.guideline_params["xi"] * baby_weight
             if self.weight >= mother_weight_loss:
                 baby = self.__class__(baby_age, baby_weight)
-                baby.calculate_fitness()
                 self.weight -= mother_weight_loss
+                self.calculate_fitness()
                 return baby
             else:
                 return None
@@ -114,6 +114,7 @@ class Herbivore(Animals):
         if F > cell_food_amount:
             F = cell_food_amount
         self.weight += F * self.guideline_params["beta"]
+        self.calculate_fitness()
         feed_left = cell_food_amount - F
         if feed_left <= 0:
             feed_left = 0
@@ -152,7 +153,7 @@ class Carnivore(Animals):
                 eating_probability = 0
                 continue_eating_cycle = False
                 break
-            elif fitness_difference > 0 and fitness_difference < self.guideline_params["DeltaPhiMax"]:
+            elif 0 < fitness_difference < self.guideline_params["DeltaPhiMax"]:
                 eating_probability = fitness_difference / self.guideline_params["DeltaPhiMax"]
             else:
                 eating_probability = 1

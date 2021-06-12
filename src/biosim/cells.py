@@ -65,7 +65,7 @@ class Cell:
                 self.carnivores.append(obj)
 
     def calculate_cell_fitness(self):
-        for animal in self.herbivores+self.carnivores:
+        for animal in self.herbivores + self.carnivores:
             animal.calculate_fitness()
 
     def cell_annual_lifecycle(self):
@@ -123,32 +123,12 @@ class Cell:
         self.herbivores.extend(newborn_herbivores)
         self.carnivores.extend(newborn_carnivores)
 
-        # for animal in self.herbivores:
-        #     animal.calculate_fitness()
-        #     feed_left = animal.feeds(self.food_status)
-        #     self.food_status = feed_left
-        #     baby = animal.procreation(len(self.herbivores))
-        #     if baby is not None:
-        #         new_born_herbivores.append(baby)
-        #     animal.migration()
-        #     animal.commence_aging()
-        #     animal.commence_weight_loss()
-        #     animal.death()
-        # self.herbivores = [animal for animal in self.herbivores if not animal.dead]
-        #
-        # for animal in self.carnivores:
-        #     animal.calculate_fitness()
-        #     baby = animal.procreation(len(self.carnivores))
-        #     if baby is not None:
-        #         new_born_carnivores.append(baby)
-        #     animal.migration()
-        #     animal.commence_aging()
-        #     animal.commence_weight_loss()
-        #     animal.death()
-        # self.carnivores = [animal for animal in self.carnivores if not animal.dead]
-        #
-        # self.herbivores.extend(new_born_herbivores)
-        # self.carnivores.extend(new_born_carnivores)
+        return [a.fitness for a in self.herbivores],\
+               [a.fitness for a in self.carnivores],\
+               [a.age for a in self.herbivores],\
+               [a.age for a in self.carnivores],\
+                [a.weight for a in self.herbivores],\
+                [a.weight for a in self.carnivores],\
 
     def get_migration_possibilities(self):
         return [(self.loc[0] - 1, self.loc[1]), (self.loc[0] + 1, self.loc[1]),
@@ -158,15 +138,15 @@ class Cell:
         self.food_status = self.f_max
 
 
+
 class Water(Cell):
     """
     'Water' cell type, does not allow animals to enter and has no fodder.
     """
     f_max = 0.
     allows_animal = False
+    rgb = (0.0, 0.0, 1.0)
 
-    def __init__(self, loc):
-        super(Water, self).__init__(loc)
 
 
 class Lowland(Cell):
@@ -175,9 +155,8 @@ class Lowland(Cell):
     """
     f_max = 800.
     allows_animal = True
+    rgb = (0.0, 0.6, 0.0)
 
-    def __init__(self, loc):
-        super(Lowland, self).__init__(loc)
 
 
 class Highland(Cell):
@@ -186,9 +165,8 @@ class Highland(Cell):
     """
     f_max = 300.
     allows_animal = True
+    rgb = (0.5, 1.0, 0.5)
 
-    def __init__(self, loc):
-        super(Highland, self).__init__(loc)
 
 
 class Desert(Cell):
@@ -197,9 +175,7 @@ class Desert(Cell):
     """
     f_max = 0.
     allows_animal = True
-
-    def __init__(self, loc):
-        super(Desert, self).__init__(loc)
+    rgb = (1.0, 1.0, 0.5)
 
 
 def set_cell_params(land_type, params):

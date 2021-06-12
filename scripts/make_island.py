@@ -3,9 +3,11 @@
 import textwrap
 from src.biosim.BioSim import BioSim
 
-geogr = """WWW
-           WLW
-           WWW"""
+geogr = """WWWWW
+WWLHW
+WDDLW
+WWWWW
+"""
 
 geogr = textwrap.dedent(geogr)
 #
@@ -13,18 +15,18 @@ geogr = textwrap.dedent(geogr)
 #
 # island.make_map()
 
-ini_herbs = [{'loc': (2, 2),
+ini_herbs = [{'loc': (2, 3),
               'pop': [{'species': 'Herbivore',
                        'age': 5,
                        'weight': 20}
                       for _ in range(150)]}]
-ini_carns = [{'loc': (2, 2),
+ini_carns = [{'loc': (2, 3),
               'pop': [{'species': 'Carnivore',
                        'age': 5,
                        'weight': 20}
                       for _ in range(40)]}]
 
-sim = BioSim(island_map=geogr, ini_pop=ini_herbs + ini_carns, seed=100)
+sim = BioSim(island_map=geogr, ini_pop=ini_herbs + ini_carns, seed=12)
 
 sim.set_animal_parameters('Herbivore', {'zeta': 3.5, 'xi': 1.2})
 
