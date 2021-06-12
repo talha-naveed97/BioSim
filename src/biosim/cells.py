@@ -65,21 +65,41 @@ class Cell:
                 self.carnivores.append(obj)
 
     def calculate_cell_fitness(self):
+        """
+        Calculate fitness of each animal in the lists for herbivores and carnivores.
+        """
+
         for animal in self.herbivores + self.carnivores:
             animal.calculate_fitness()
 
     def cell_annual_lifecycle(self):
         """
-        Runs the annual cycle for the a single cell:
+        Run the annual cycle for a single cell in following order:
             - Feeding
             - Procreating
             - Migration
             - Aging
             - Loss of weight
             - Death
+
+        Returns
+        -------
+        list
+            Fitness values of herbivores
+        list
+            Fitness values of carnivores
+        list
+            Ages of herbivores
+        list
+            Ages of carnivores
+        list
+            Weights of herbivores
+        list
+            Weights of carnivores
+
         """
 
-        # Calculate fitness of Animals in Cell
+        # Calculate fitness
         self.calculate_cell_fitness()
 
         # Sort animals in cell by fitness
@@ -136,12 +156,15 @@ class Cell:
                 (self.loc[0], self.loc[1] - 1), (self.loc[0], self.loc[1] + 1)]
 
     def reset_cell(self):
+        """
+        Reset the amount of fodder available in cells.
+        """
         self.food_status = self.f_max
 
 
 class Water(Cell):
     """
-    'Water' cell type, does not allow animals to enter and has no fodder.
+    'Water' cell type: does not allow animals to enter and has no fodder.
     """
     f_max = 0.
     allows_animal = False
@@ -150,7 +173,7 @@ class Water(Cell):
 
 class Lowland(Cell):
     """
-    'Lowland' cell type, allows animals to enter and has fodder.
+    'Lowland' cell type: allows animals to enter and has fodder.
     """
     f_max = 800.
     allows_animal = True
@@ -159,7 +182,7 @@ class Lowland(Cell):
 
 class Highland(Cell):
     """
-    'Highland' cell type, allows animals to enter and has less fodder than Lowland.
+    'Highland' cell type: allows animals to enter and has less fodder than Lowland.
     """
     f_max = 300.
     allows_animal = True
