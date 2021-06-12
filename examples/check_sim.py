@@ -3,7 +3,7 @@
 import textwrap
 import matplotlib.pyplot as plt
 
-from biosim.simulation import BioSim
+from src.biosim.BioSim import BioSim
 
 """
 Compatibility check for BioSim simulations.
@@ -59,6 +59,7 @@ if __name__ == '__main__':
                                             'DeltaPhiMax': 9.})
     sim.set_landscape_parameters('L', {'f_max': 700})
 
+    sim.add_population(ini_herbs)
     sim.simulate(num_years=100)
     sim.add_population(population=ini_carns)
     sim.simulate(num_years=100)
