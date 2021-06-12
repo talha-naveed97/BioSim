@@ -121,11 +121,17 @@ class Island:
                 if migrating_cell.allows_animal:
                     if animal.__class__.__name__ == 'Herbivore':
                         migrating_cell.herbivores.append(animal)
+                        index = cell.herbivores.index(animal)
+                        cell.herbivores.pop(index)
                     else:
                         migrating_cell.carnivores.append(animal)
+                        index = cell.carnivores.index(animal)
+                        cell.carnivores.pop(index)
+
 
     def get_random_cell(self, possibilies):
-        return random.choice(possibilies)
+        _dir = random.randint(0, 3)
+        return possibilies[_dir]
 
     def make_map(self):
         ax = [pt['Plot'] for pt in self.plots if pt['Name'] == 'Geography'][0]
@@ -148,14 +154,14 @@ class Island:
         ax = [pt['Plot'] for pt in self.plots if pt['Name'] == 'Number_of_species'][0]
         if is_init:
             ax.set_xlim(0, total_years)
-            ax.set_ylim(0, 20000)
+            ax.set_ylim(0, 15000)
             self.line_herbivores = ax.plot(np.arange(total_years),
                                            np.full(total_years, np.nan), 'b-')[0]
             self.line_carnivores = ax.plot(np.arange(total_years),
                                            np.full(total_years, np.nan), 'r-')[0]
         else:
             y_val = max(herbivore_count, carnivores_count)
-            if y_val > 20000:
+            if y_val > 15000:
                 ax.set_ylim(0, max(herbivore_count, carnivores_count))
         y_data_herbivore = self.line_herbivores.get_ydata()
         y_data_herbivore[current_year - 1] = herbivore_count

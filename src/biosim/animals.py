@@ -2,6 +2,8 @@
 
 import math
 import random
+
+
 # from enum import Enum
 #
 #
@@ -28,7 +30,8 @@ class Animals:
         else:
             q_age = 1 / (1 + math.exp(self.guideline_params["phi_age"] * (self.age - self.guideline_params["a_half"])))
             q_weight = 1 / (1 + math.exp(-
-                self.guideline_params["phi_weight"] * (self.weight - self.guideline_params["w_half"])))
+                                         self.guideline_params["phi_weight"] * (
+                                                     self.weight - self.guideline_params["w_half"])))
             self.fitness = q_age * q_weight
 
     def migration(self):
@@ -68,7 +71,7 @@ class Animals:
             return None
 
     def death(self):
-        if self.weight == 0:
+        if self.weight <= 0:
             death_prob = 1
         else:
             death_prob = self.guideline_params["omega"] * (1 - self.fitness)
@@ -83,8 +86,7 @@ class Animals:
 
     def commence_weight_loss(self):
         self.weight -= self.weight * self.guideline_params["eta"]
-        if self.weight <= 0:
-            self.death()
+        self.calculate_fitness()
 
 
 class Herbivore(Animals):
@@ -161,8 +163,8 @@ class Carnivore(Animals):
             if eating_probability > random.random():
                 herbivore.dead = True
                 self.weight += self.guideline_params["beta"] * herbivore.weight
-                amount_eaten += herbivore.weight
                 self.calculate_fitness()
+                amount_eaten += herbivore.weight
                 if amount_eaten >= self.guideline_params["F"]:
                     break
         return continue_eating_cycle

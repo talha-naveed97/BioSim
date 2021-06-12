@@ -12,7 +12,7 @@ class BioSim:
     default_cmax = {'Herbivore': 200, 'Carnivore': 50}
     default_hist_specs = {'fitness': {'max': 1.0, 'delta': 0.05},
                           'age': {'max': 60.0, 'delta': 2},
-                          'weight': {'max': 80, 'delta': 2}}
+                          'weight': {'max': 60, 'delta': 2}}
 
     def __init__(self, island_map, ini_pop, seed,
                  vis_years=1, ymax_animals=None, cmax_animals=None, hist_specs=None,

@@ -33,12 +33,15 @@ class Cell:
         # Calculate fitness of Animals in Cell
         self.calculate_cell_fitness()
         # Sort animals in cell by fitness
-        self.herbivores.sort(key=lambda x: x.fitness, reverse=False)
-        self.carnivores.sort(key=lambda x: x.fitness, reverse=True)
+
         # Feeding
         for animal in self.herbivores:
             feed_left = animal.feeds(self.food_status)
             self.food_status = feed_left
+
+        self.herbivores.sort(key=lambda x: x.fitness, reverse=False)
+        self.carnivores.sort(key=lambda x: x.fitness, reverse=True)
+
         for animal in self.carnivores:
             continue_eating_cycle = animal.feeds(self.herbivores)
             self.herbivores = [animal for animal in self.herbivores if not animal.dead]
