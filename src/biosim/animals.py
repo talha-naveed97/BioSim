@@ -2,8 +2,6 @@
 
 import math
 import random
-
-
 # from enum import Enum
 #
 #
@@ -29,8 +27,8 @@ class Animals:
             self.fitness = 0
         else:
             q_age = 1 / (1 + math.exp(self.guideline_params["phi_age"] * (self.age - self.guideline_params["a_half"])))
-            q_weight = 1 / (1 + math.exp(
-                -self.guideline_params["phi_weight"] * (self.weight - self.guideline_params["w_half"])))
+            q_weight = 1 / (1 + math.exp(-
+                self.guideline_params["phi_weight"] * (self.weight - self.guideline_params["w_half"])))
             self.fitness = q_age * q_weight
 
     def migration(self):
@@ -45,10 +43,11 @@ class Animals:
                                                                                      + self.guideline_params[
                                                                                          "sigma_birth"]):
             birth_prob = min(1, self.guideline_params["gamma"] * self.fitness * (cell_animal_count - 1))
-            if birth_prob > random.random():
-                self.gives_birth = True
-            else:
-                self.gives_birth = False
+        else:
+            birth_prob = 0
+
+        if birth_prob > random.random():
+            self.gives_birth = True
         else:
             self.gives_birth = False
 
@@ -69,20 +68,23 @@ class Animals:
             return None
 
     def death(self):
-        if self.weight <= 0:
-            self.dead = True
+        if self.weight == 0:
+            death_prob = 1
         else:
             death_prob = self.guideline_params["omega"] * (1 - self.fitness)
-            if death_prob > random.random():
-                self.dead = True
-            else:
-                self.dead = False
+
+        if death_prob > random.random():
+            self.dead = True
+        else:
+            self.dead = False
 
     def commence_aging(self):
         self.age += 1
 
     def commence_weight_loss(self):
         self.weight -= self.weight * self.guideline_params["eta"]
+        if self.weight <= 0:
+            self.death()
 
 
 class Herbivore(Animals):
@@ -112,6 +114,7 @@ class Herbivore(Animals):
         if F > cell_food_amount:
             F = cell_food_amount
         self.weight += F * self.guideline_params["beta"]
+        self.calculate_fitness()
         feed_left = cell_food_amount - F
         if feed_left <= 0:
             feed_left = 0
