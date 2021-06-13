@@ -274,10 +274,7 @@ class Herbivore(Animals):
         cell_food_amount : float
             The amount of food available in the cell.
 
-        Returns
-        -------
-        feed_left : float
-            The amount of food left in the cell after herbivore has eaten
+            |
 
         """
         f = self.guideline_params["F"]
@@ -380,10 +377,7 @@ class Carnivore(Animals):
         herbivores : list
             The list of herbivores present in the cell.
 
-        Returns
-        -------
-        feed_left : float
-            The amount of food left in the cell after herbivore has eaten
+            |
 
         """
         continue_eating_cycle = True
@@ -409,6 +403,20 @@ class Carnivore(Animals):
 
 
 def set_animal_params(species, params):
+    """
+    Set animal characteristics.
+
+    Parameters
+    ----------
+    species : str
+            Type of animal, 'Herbivore' or 'Carnivore'
+
+    params : dict
+            Dictionary of animal parameters among guideline_params
+
+        |
+
+    """
     if species == 'Herbivore':
         Herbivore.update_defaults(params)
     elif species == 'Carnivore':

@@ -77,6 +77,9 @@ class Cell:
         """
         Calculate fitness of each animal in the lists for herbivores and carnivores.
 
+        .. seealso::
+            - animals.calculate_fitness()
+
         |
 
         """
