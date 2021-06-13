@@ -12,20 +12,20 @@ from .animals import Herbivore, Carnivore
 
 class Cell:
     """
-
-    Parameters
-    ----------
-    loc : tuple
-        Location of cell on the island.
+    The Cell class.
 
     Attributes
     ----------------
+    loc
+        Tuple indicating location of cell on the island, starts at (1,1).
     herbivores
         List of herbivores present in the cell.
     carnivores
         List of carnivores present in the cell.
     food_status
         Amount of food available in the cell.
+
+        |
 
     """
 
@@ -38,14 +38,14 @@ class Cell:
     @classmethod
     def update_defaults(cls, params):
         """
-
         Update default amount of fodder for cells.
 
         Parameters
         ----------
-        params : dict
-            Dictionary {'f_max': value} that specifies the new default value of fodder in Lowland and Highland
-            cell types.
+        params
+            Dictionary {'f_max': value} that sets the new default value of fodder a cell.
+
+            |
 
         """
         cls.f_max = params["f_max"]
@@ -57,8 +57,10 @@ class Cell:
 
         Parameters
         ----------
-        animals : list
+        animals
             list of dictionaries that specify the species, age, and weight of each animal.
+
+            |
 
         """
         for x in animals:
@@ -71,8 +73,9 @@ class Cell:
 
     def calculate_cell_fitness(self):
         """
-
         Calculate fitness of each animal in the lists for herbivores and carnivores.
+
+        |
 
         """
 
@@ -81,7 +84,6 @@ class Cell:
 
     def cell_annual_lifecycle(self):
         """
-
         Run the annual cycle for a single cell in following order:
             - Feeding
             - Procreating
@@ -104,6 +106,8 @@ class Cell:
             Weights of herbivores
         list
             Weights of carnivores
+
+            |
 
         """
 
@@ -160,6 +164,18 @@ class Cell:
 
 
     def get_migration_possibilities(self):
+        """
+
+        Returns a list of tuples indicating locations where animal can migrate (see figure 1)
+
+        .. figure:: cells.png
+            :width: 200
+
+        Figure 1: Cells where animals can migrate, no diagonal movement.
+
+        |
+
+        """
         return [(self.loc[0] - 1, self.loc[1]), (self.loc[0] + 1, self.loc[1]),
                 (self.loc[0], self.loc[1] - 1), (self.loc[0], self.loc[1] + 1)]
 
@@ -167,6 +183,8 @@ class Cell:
         """
 
         Reset the amount of fodder available in cells.
+
+        |
 
         """
         self.food_status = self.f_max
@@ -176,6 +194,8 @@ class Water(Cell):
     """
 
     'Water' cell type: does not allow animals to enter and has no fodder.
+
+    |
 
     """
     f_max = 0.
@@ -188,6 +208,8 @@ class Lowland(Cell):
 
     'Lowland' cell type: allows animals to enter and has fodder.
 
+    |
+
     """
     f_max = 800.
     allows_animal = True
@@ -199,6 +221,8 @@ class Highland(Cell):
 
     'Highland' cell type: allows animals to enter and has less fodder than Lowland.
 
+    |
+
     """
     f_max = 300.
     allows_animal = True
@@ -209,6 +233,8 @@ class Desert(Cell):
     """
 
     'Desert' cell type: allows animals to enter, but has no fodder.
+
+    |
 
     """
     f_max = 0.
@@ -227,8 +253,10 @@ def set_cell_params(land_type, params):
         {'L' for Lowland, 'H' for Highland}
 
     params : dict
-        {'f_max': value}, Dictionary that specifies the new default value of fodder in
+        {'f_max': value}, specifies the new default value of fodder in
         Lowland and Highland cell types.
+
+        |
 
     """
 

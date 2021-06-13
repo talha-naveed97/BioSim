@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 
+"""
+This module implements the Animals class to simulate the animals found on Rossumøya island.
+The two subclasses, Herbivore and Carnivore represent the two types of animals and define
+their respective characteristics, including parameters and functional differences such as the
+way each type of animal feeds.
+"""
+
 import math
 import random
 # from enum import Enum
@@ -10,19 +17,81 @@ import random
 #     Carnivore = 2
 
 class Animals:
+    """
+    The Animals class.
+
+    Parameters
+    __________
+
+    age : int
+        Age of the animal.
+
+    weight: float
+        Weight of the animal.
+
+    dead : bool
+        *True* if the animal dies, *False* otherwise.
+
+    fitness : float
+        Fitness of the animal.
+
+    migrates : bool
+        *True* leads to animal migrating to another cell, *False* keeps the animal in the same
+        cell during annual cycle.
+
+    gives_birth : bool
+        Animal will likely give birth if *True*.
+
+        |
+
+    """
+
     def __init__(self, age, weight):
         self.age = age
         self.weight = weight
         self.dead = False
-        self.fitness = 0
+        self.fitness = 0.
         self.migrates = False
         self.gives_birth = False
 
     @classmethod
     def update_defaults(cls, params):
+        """
+        Update default characteristics of animals.
+
+        Parameters
+        ----------
+        params : dict
+            Dictionary of *guideline_params* for each type of animal.
+
+            .. seealso::
+                - animals.Herbivore()
+                - animals.Carnivore()
+
+            |
+
+        """
         cls.guideline_params.update(params)
 
     def calculate_fitness(self):
+        """
+        Calculate fitness of an animal (between 0 and 1) using the equation:
+            .. math::
+                \\Phi =
+                \\begin{cases}
+                    0 & \\text{if } w \\le 0
+
+                    q^{+}(a,a_{\\frac{1}{2}},\\phi_{age}) \\times q^{-}(w,w_{\\frac{1}{2}},\\phi_{weight}) &
+                    \\text{else}
+                \\end{cases}
+
+        where
+            .. math::
+                q^{\\pm}(a,a_{\\frac{1}{2}},\\phi) =  \\frac{1}{1 + e^{\\pm\\phi(x-x_\\frac{1}{2})}}
+
+        |
+
+        """
         if self.weight <= 0:
             self.fitness = 0
         else:
@@ -32,6 +101,16 @@ class Animals:
             self.fitness = q_age * q_weight
 
     def migration(self):
+        """
+        Compute migration probability for the animal:
+            .. math::
+                \\mu \\Phi
+
+        and set ``migrates`` as *True* if probability is higher than a random threshold.
+
+        |
+
+        """
         migration_prob = self.guideline_params["mu"] * self.fitness
         if migration_prob > random.random():
             self.migrates = True
@@ -39,6 +118,23 @@ class Animals:
             self.migrates = False
 
     def birth(self, cell_animal_count):
+
+        """
+        Compute the probability for an animal giving birth:
+            .. math::
+                \\text{min}(1, \\gamma \\times \\Phi \\times (N-1))
+
+        and set ``gives_birth`` as *True* if probability is higher than a random threshold.
+
+        Parameters
+        ----------
+        cell_animal_count : int
+            Number of animals of a in a cell. Probability of giving birth is only calculated
+            if there are at least two animals of the same species present in a cell.
+
+            |
+
+        """
         if cell_animal_count > 1 and self.weight >= self.guideline_params["zeta"] * (self.guideline_params["w_birth"]
                                                                                      + self.guideline_params[
                                                                                          "sigma_birth"]):
@@ -171,5 +267,7 @@ class Carnivore(Animals):
 def set_animal_params(species, params):
     if species == 'Herbivore':
         Herbivore.update_defaults(params)
-    else:
+    elif species == 'Carnivore':
         Carnivore.update_defaults(params)
+    else:
+        pass
