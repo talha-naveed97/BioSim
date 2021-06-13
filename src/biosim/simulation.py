@@ -47,6 +47,9 @@ class BioSim:
         """
         self.ini_pop = ini_pop
         self.seed = seed
+        self.num_years = 0
+        self.current_year = 0
+        self.vis_years = 0
         if cmax_animals is None:
             self.c_max_animal = self.default_cmax
         else:
@@ -62,6 +65,7 @@ class BioSim:
         if ini_pop is not None:
             self.add_population(ini_pop)
 
+        random.seed(self.seed)
     def set_animal_parameters(self, species, params):
         """
         Set parameters for animal species.
@@ -83,21 +87,17 @@ class BioSim:
         Run simulation while visualizing the result.
         :param num_years: number of years to simulate
         """
-        # print(self.row)
-        # print(self.cols)
-        # image = np.zeros(self.row * self.cols)
-        # image[::2] = np.random.random(self.row * self.cols // 2 + 1)
-        #
-        # # Reshape things into a 9x9 grid.
-        # image = image.reshape((self.row, self.cols))
-        # plt.matshow(image)
-        # plt.show()
-        random.seed(self.seed)
-        self.island.setup_visualization(3, 3, num_years, self.c_max_animal,self.hist_specs)
-        for x in range(num_years):
-            year_number = x + 1
-            print("Year:", year_number)
-            self.island.commence_annual_cycle(year_number)
+        if self.num_years == 0:
+            self.num_years = num_years
+        else:
+            self.num_years += num_years
+        if self.vis_years:
+            if self.current_year == 0:
+                self.island.setup_visualization(3, 3, self.num_years, self.c_max_animal, self.hist_specs)
+        for x in range(self.current_year,self.num_years):
+            self.current_year = x + 1
+            print("Year:", self.current_year)
+            self.island.commence_annual_cycle(self.current_year)
             annual_herbivore_count, annual_carnivore_count = self.num_animals_per_species
             # self.island.update_number_of_species_graph(year_number, num_years, annual_herbivore_count,
             #                                            annual_carnivore_count)
@@ -106,8 +106,9 @@ class BioSim:
             # self.island.fitness_histogram(year_number, self.hist_specs['fitness'])
             # self.island.age_histogram(year_number, self.hist_specs['age'])
             # self.island.weight_histogram(year_number, self.hist_specs['weight'])
-            self.island.update_visualiztion(year_number,num_years,annual_herbivore_count,annual_carnivore_count,
-                                            self.c_max_animal,self.hist_specs)
+            if self.vis_years:
+                self.island.update_visualiztion(self.current_year,self.num_years,annual_herbivore_count,annual_carnivore_count,
+                                                self.c_max_animal,self.hist_specs)
 
     def add_population(self, population):
         """
@@ -119,8 +120,7 @@ class BioSim:
     @property
     def year(self):
         """Last year simulated."""
-
-
+        return self.current_year
     @property
     def num_animals(self):
         """Total number of animals on island."""

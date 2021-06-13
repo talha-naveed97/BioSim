@@ -28,6 +28,7 @@ class Island:
         self.age_values_carnivores = []
         self.weight_values_herbivores = []
         self.weight_values_carnivores = []
+        self.max_species_count = 1000
         self.year_counter = None
         self.year_txt = None
         self.year_template = 'Year: {:5d}'
@@ -156,17 +157,40 @@ class Island:
 
     def update_number_of_species_graph(self, is_init, current_year, total_years, herbivore_count, carnivores_count):
         ax = [pt['Plot'] for pt in self.plots if pt['Name'] == 'Number_of_species'][0]
+        max_count = max(herbivore_count,carnivores_count)
         if is_init:
             ax.set_xlim(0, total_years)
-            ax.set_ylim(0, 15000)
+            ax.set_ylim(0, self.max_species_count)
             self.line_herbivores = ax.plot(np.arange(total_years),
                                            np.full(total_years, np.nan), 'b-')[0]
             self.line_carnivores = ax.plot(np.arange(total_years),
                                            np.full(total_years, np.nan), 'r-')[0]
         else:
+            # if total_years > len(self.line_herbivores.get_xdata()):
+            #     y_data_herbivore = self.line_herbivores.get_ydata()
+            #     self.line_herbivores =ax.plot(np.arange(total_years),
+            #                                np.full(total_years, np.nan), 'b-')[0]
+            #     y_data_carnivore = self.line_carnivores.get_ydata()
+            #     self.line_carnivores = ax.plot(np.arange(total_years),
+            #                                    np.full(total_years, np.nan), 'b-')[0]
+            if total_years > len(self.line_herbivores.get_xdata()):
+                x_data_h, y_data_h = self.line_herbivores.get_data()
+                x_data_c, y_data_c = self.line_carnivores.get_data()
+                x_new_h = np.arange(x_data_h[-1] + 1, total_years + 1)
+                x_new_c = np.arange(x_data_c[-1] + 1, total_years + 1)
+                ax.set_xlim(0, total_years + 1)
+                if len(x_new_h) > 0:
+                    y_new_h = np.full(x_new_h.shape, np.nan)
+                    self.line_herbivores.set_data(np.hstack((x_data_h, x_new_h)),
+                                             np.hstack((y_data_h, y_new_h)))
+                if len(x_new_c) > 0:
+                    y_new_c = np.full(x_new_c.shape, np.nan)
+                    self.line_carnivores.set_data(np.hstack((x_data_c, x_new_c)),
+                                             np.hstack((y_data_c, y_new_c)))
             y_val = max(herbivore_count, carnivores_count)
-            if y_val > 15000:
-                ax.set_ylim(0, max(herbivore_count, carnivores_count))
+            if self.max_species_count < max_count:
+                self.max_species_count = int(1.2 * max_count)
+                ax.set_ylim(0, self.max_species_count)
         y_data_herbivore = self.line_herbivores.get_ydata()
         y_data_herbivore[current_year - 1] = herbivore_count
         y_data_carnivore = self.line_carnivores.get_ydata()

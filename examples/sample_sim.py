@@ -8,11 +8,12 @@ Full island simulation with herbivores and carnivores.
 __author__ = 'Hans Ekkehard Plesser, NMBU'
 
 import textwrap
-from src.biosim.BioSim import BioSim
+from biosim.simulation import BioSim
 
 if __name__ == '__main__':
 
-    geogr = """WWWWWWWWWWWWWWWWWWWWW
+    geogr = """\
+               WWWWWWWWWWWWWWWWWWWWW
                WHHHHHLLLLWWLLLLLLLWW
                WHHHHHLLLLWWLLLLLLLWW
                WHHHHHLLLLWWLLLLLLLWW
@@ -53,7 +54,6 @@ if __name__ == '__main__':
                              'weight': {'max': 60, 'delta': 2}},
                  img_dir='results',
                  img_base='sample')
-    #sim.add_population(ini_herbs + ini_carns)
     sim.simulate(400)
     sim.make_movie()
 

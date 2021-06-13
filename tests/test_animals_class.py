@@ -20,7 +20,7 @@ def test_calculate_fitness():
     weight = 20
     animal = Herbivore(10, 20)
     q_age = 1 / (1 + math.exp(animal.guideline_params["phi_age"] * (age - animal.guideline_params["a_half"])))
-    q_weight = 1 / (1 + math.exp(
+    q_weight = 1 / (1 + math.exp(-
         animal.guideline_params["phi_weight"] * (weight - animal.guideline_params["w_half"])))
     fitness = q_age * q_weight
     animal.calculate_fitness()

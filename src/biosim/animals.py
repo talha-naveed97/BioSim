@@ -4,24 +4,27 @@ import math
 import random
 
 
-# from enum import Enum
-#
-#
-# class Animal_Type(Enum):
-#     Herbivore = 1
-#     Carnivore = 2
-
 class Animals:
     def __init__(self, age, weight):
         self.age = age
         self.weight = weight
-        self.dead = False
         self.fitness = 0
+        self.calculate_fitness()
         self.migrates = False
-        self.gives_birth = False
+        self.dead = False
 
     @classmethod
     def update_defaults(cls, params):
+        key_diff = params.keys() - cls.guideline_params.keys()
+        if len(key_diff) != 0:
+            raise ValueError('The following keys are invalid: ', key_diff)
+        if 'DeltaPhiMax' in params.keys() and params['DeltaPhiMax'] <= 0:
+            raise ValueError('DeltaPhiMax must be > zero')
+        for key, value in params.items():
+            if type(value) is not int and type(value) is not float:
+                raise ValueError('All parameter values must be numerical')
+            if value < 0:
+                raise ValueError('All parameter values must be >= zero')
         cls.guideline_params.update(params)
 
     def calculate_fitness(self):
@@ -31,8 +34,25 @@ class Animals:
             q_age = 1 / (1 + math.exp(self.guideline_params["phi_age"] * (self.age - self.guideline_params["a_half"])))
             q_weight = 1 / (1 + math.exp(-
                                          self.guideline_params["phi_weight"] * (
-                                                     self.weight - self.guideline_params["w_half"])))
+                                                 self.weight - self.guideline_params["w_half"])))
             self.fitness = q_age * q_weight
+
+    def procreation(self, cell_animal_count):
+        birth_prob = 0
+        if cell_animal_count > 1 and self.weight >= self.guideline_params["zeta"] * (self.guideline_params["w_birth"]
+                                                                                     + self.guideline_params[
+                                                                                         "sigma_birth"]):
+            birth_prob = min(1, self.guideline_params["gamma"] * self.fitness * (cell_animal_count - 1))
+        if birth_prob > random.random():
+            baby_age = 0
+            baby_weight = random.gauss(self.guideline_params["w_birth"], self.guideline_params["sigma_birth"])
+            mother_weight_loss = self.guideline_params["xi"] * baby_weight
+            if self.weight >= mother_weight_loss:
+                baby = self.__class__(baby_age, baby_weight)
+                self.weight -= mother_weight_loss
+                self.calculate_fitness()
+                return baby
+        return None
 
     def migration(self):
         migration_prob = self.guideline_params["mu"] * self.fitness
@@ -41,53 +61,20 @@ class Animals:
         else:
             self.migrates = False
 
-    def birth(self, cell_animal_count):
-        if cell_animal_count > 1 and self.weight >= self.guideline_params["zeta"] * (self.guideline_params["w_birth"]
-                                                                                     + self.guideline_params[
-                                                                                         "sigma_birth"]):
-            birth_prob = min(1, self.guideline_params["gamma"] * self.fitness * (cell_animal_count - 1))
-        else:
-            birth_prob = 0
-
-        if birth_prob > random.random():
-            self.gives_birth = True
-        else:
-            self.gives_birth = False
-
-    def procreation(self, cell_animal_count):
-        self.birth(cell_animal_count)
-        if self.gives_birth:
-            baby_age = 0
-            baby_weight = random.gauss(self.guideline_params["w_birth"], self.guideline_params["sigma_birth"])
-            mother_weight_loss = self.guideline_params["xi"] * baby_weight
-            if self.weight >= mother_weight_loss:
-                baby = self.__class__(baby_age, baby_weight)
-                self.weight -= mother_weight_loss
-                self.calculate_fitness()
-                baby.calculate_fitness()
-                return baby
-            else:
-                return None
-        else:
-            return None
+    def commence_aging(self):
+        self.age += 1
+        self.weight -= self.weight * self.guideline_params["eta"]
+        self.calculate_fitness()
 
     def death(self):
+        death_prob = 0
         if self.weight <= 0:
-            death_prob = 1
+            self.dead = True
         else:
             death_prob = self.guideline_params["omega"] * (1 - self.fitness)
 
         if death_prob > random.random():
             self.dead = True
-        else:
-            self.dead = False
-
-    def commence_aging(self):
-        self.age += 1
-
-    def commence_weight_loss(self):
-        self.weight -= self.weight * self.guideline_params["eta"]
-        self.calculate_fitness()
 
 
 class Herbivore(Animals):
@@ -113,15 +100,12 @@ class Herbivore(Animals):
                         }
 
     def feeds(self, cell_food_amount):
-        F = self.guideline_params["F"]
-        if F > cell_food_amount:
-            F = cell_food_amount
-        self.weight += F * self.guideline_params["beta"]
+        f = self.guideline_params["F"]
+        if f > cell_food_amount:
+            f = cell_food_amount
+        self.weight += f * self.guideline_params["beta"]
         self.calculate_fitness()
-        feed_left = cell_food_amount - F
-        if feed_left < 0:
-            feed_left = 0
-            raise ValueError
+        feed_left = cell_food_amount - f
         return feed_left
 
 
@@ -148,13 +132,11 @@ class Carnivore(Animals):
                         }
 
     def feeds(self, herbivores):
-        eating_probability = 0
         continue_eating_cycle = True
         amount_eaten = 0
         for herbivore in herbivores:
             fitness_difference = self.fitness - herbivore.fitness
             if self.fitness <= herbivore.fitness:
-                eating_probability = 0
                 continue_eating_cycle = False
                 break
             elif 0 < fitness_difference < self.guideline_params["DeltaPhiMax"]:
@@ -165,8 +147,8 @@ class Carnivore(Animals):
             if eating_probability > random.random():
                 herbivore.dead = True
                 self.weight += self.guideline_params["beta"] * herbivore.weight
-                self.calculate_fitness()
                 amount_eaten += herbivore.weight
+                self.calculate_fitness()
                 if amount_eaten >= self.guideline_params["F"]:
                     break
         return continue_eating_cycle
@@ -175,5 +157,7 @@ class Carnivore(Animals):
 def set_animal_params(species, params):
     if species == 'Herbivore':
         Herbivore.update_defaults(params)
-    else:
+    elif species == 'Carnivore':
         Carnivore.update_defaults(params)
+    else:
+        raise ValueError('Cannot Identify Species')

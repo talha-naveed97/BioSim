@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import textwrap
-from src.biosim.BioSim import BioSim
+from src.biosim.simulation import BioSim
 
 geogr = """WWWWW
 WWLHW
