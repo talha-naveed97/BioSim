@@ -7,7 +7,7 @@ Water, Desert, Highland, and Lowland.
 
 """
 
-from .animals import Herbivore, Carnivore
+from .animals import Herbivore, Carnivore, set_animal_params
 
 
 class Cell:
@@ -262,14 +262,15 @@ def set_cell_params(land_type, params):
         |
 
     """
-
-    if land_type == 'H':
-        Highland.update_defaults(params)
+    if land_type == 'D' or land_type == 'W':
+        raise ValueError('Water and Desert food values cannot be changed')
     elif land_type == 'L':
         Lowland.update_defaults(params)
-    elif land_type == 'D':
-        Desert.update_defaults(params)
-    elif land_type == 'W':
-        raise ValueError('Water cannot have food')
+    elif land_type == 'H':
+        Highland.update_defaults(params)
     else:
-        raise ValueError('Cannot Identify Land Type')
+        raise ValueError('Invalid landscape type', land_type)
+
+
+def update_animal_params(species, params):
+    set_animal_params(species, params)
