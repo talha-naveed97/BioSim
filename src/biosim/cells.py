@@ -284,7 +284,7 @@ def set_cell_params(land_type, params):
     if land_type in ['D', 'W']:
         raise KeyError('Invalid key for land_tpe. Desert and Water cells have no fodder.')
 
-    if type(params['f_max']) != int or type(params['f_max']) != float or params['f_max'] < 0:
+    if type(params['f_max']) != int and type(params['f_max']) != float or params['f_max'] < 0:
         raise ValueError('f_max must be numeric and cannot be negative.')
 
     if land_type == 'H' and 'f_max' in params.keys():
@@ -297,3 +297,7 @@ def set_cell_params(land_type, params):
         raise ValueError('Water cannot have food')
     else:
         raise ValueError('Cannot Identify Land Type')
+
+def update_animal_params(species,params):
+    set_animal_params(species,params)
+
