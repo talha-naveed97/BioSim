@@ -49,7 +49,7 @@ class BioSim:
         self.seed = seed
         self.num_years = 0
         self.current_year = 0
-        self.vis_years = 0
+        self.vis_years = 1
         if cmax_animals is None:
             self.c_max_animal = self.default_cmax
         else:

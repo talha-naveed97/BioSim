@@ -45,7 +45,7 @@ class Island:
         self.update_fitness_histogram(hist_specs['fitness'])
         self.update_weight_histogram(hist_specs['weight'])
         self.update_age_histogram(hist_specs['age'])
-        self.year_counter = fig.add_axes([0.4, 0.8, 0.2, 0.2])  # llx, lly, w, h
+        self.year_counter = self.fig.add_axes([0.4, 0.8, 0.2, 0.2])  # llx, lly, w, h
         self.year_counter.axis('off')  # turn off coordinate system
         self.year_txt = self.year_counter.text(0.5, 0.5, self.year_template.format(0),
                horizontalalignment='center',
@@ -96,9 +96,8 @@ class Island:
         self.weight_values_herbivores = []
         self.weight_values_carnivores = []
         for cell in self.cell_list:
-            # print("Cell Location:", cell.loc)
-            # print("Total Herbivore In Cell:", len(cell.herbivores))
-            # print("Total Carnivore In Cell:", len(cell.carnivores))
+            if not cell.allows_animal:
+                continue
             if year_number > 1:
                 self.commence_migration(cell)
             herbivores_fitness, carnivores_fitness, herbivores_age, \
@@ -144,10 +143,8 @@ class Island:
         ax.set_yticklabels(range(1, 1 + len(self.map_rgb)))
 
     def show_plots(self):
-        #plt.show(block=False)
         self.fig.canvas.flush_events()
         plt.pause(1e-6)
-        plt.show(block=False)
 
     def get_total_species_count(self):
         total_herbivores = sum(len(c.herbivores) for c in self.cell_list)
@@ -165,13 +162,6 @@ class Island:
             self.line_carnivores = ax.plot(np.arange(total_years),
                                            np.full(total_years, np.nan), 'r-')[0]
         else:
-            # if total_years > len(self.line_herbivores.get_xdata()):
-            #     y_data_herbivore = self.line_herbivores.get_ydata()
-            #     self.line_herbivores =ax.plot(np.arange(total_years),
-            #                                np.full(total_years, np.nan), 'b-')[0]
-            #     y_data_carnivore = self.line_carnivores.get_ydata()
-            #     self.line_carnivores = ax.plot(np.arange(total_years),
-            #                                    np.full(total_years, np.nan), 'b-')[0]
             if total_years > len(self.line_herbivores.get_xdata()):
                 x_data_h, y_data_h = self.line_herbivores.get_data()
                 x_data_c, y_data_c = self.line_carnivores.get_data()

@@ -120,9 +120,44 @@ class Cell:
         self.carnivores = [carnivore for carnivore in self.carnivores if not carnivore.dead]
 
     def reset_cell(self):
+        """
+
+        Reset the amount of fodder available in cells.
+
+        |
+
+        """
         self.food_status = self.f_max
 
     def cell_annual_lifecycle(self):
+        """
+                Run the annual cycle for a single cell in following order:
+                    - Feeding
+                    - Procreating
+                    - Migration
+                    - Aging
+                    - Loss of weight
+                    - Death
+
+                Returns
+                -------
+                list
+                    Fitness values of herbivores
+                list
+                    Fitness values of carnivores
+                list
+                    Ages of herbivores
+                list
+                    Ages of carnivores
+                list
+                    Weights of herbivores
+                list
+                    Weights of carnivores
+
+                    |
+
+                """
+
         # Feeding
         self.animals_feed()
         # Procreation
@@ -141,7 +176,6 @@ class Cell:
                [a.weight for a in self.herbivores], \
                [a.weight for a in self.carnivores]
 
-
     def get_migration_possibilities(self):
         """
 
@@ -158,16 +192,6 @@ class Cell:
         return [(self.loc[0] - 1, self.loc[1]), (self.loc[0] + 1, self.loc[1]),
                 (self.loc[0], self.loc[1] - 1), (self.loc[0], self.loc[1] + 1)]
 
-    def reset_cell(self):
-        """
-
-        Reset the amount of fodder available in cells.
-
-        |
-
-        """
-        self.food_status = self.f_max
-
 
 class Water(Cell):
     """
@@ -180,7 +204,6 @@ class Water(Cell):
     f_max = 0.
     allows_animal = False
     rgb = (0.0, 0.0, 1.0)
-
 
 
 class Lowland(Cell):
@@ -196,7 +219,6 @@ class Lowland(Cell):
     rgb = (0.0, 0.6, 0.0)
 
 
-
 class Highland(Cell):
     """
 
@@ -208,7 +230,6 @@ class Highland(Cell):
     f_max = 300.
     allows_animal = True
     rgb = (0.5, 1.0, 0.5)
-
 
 
 class Desert(Cell):
@@ -225,7 +246,6 @@ class Desert(Cell):
 
 
 def set_cell_params(land_type, params):
-    if land_type == 'H':
     """
 
     Set the maximum amount of fodder in cells.
