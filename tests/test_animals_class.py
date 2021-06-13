@@ -4,7 +4,8 @@
 Test set for Animals class for INF200 June 2021.
 """
 
-from biosim.animals import *
+from biosim.animals import Herbivore, Carnivore
+import math
 
 
 def test_update_params():
@@ -28,6 +29,32 @@ def test_calculate_fitness():
 
 
 def test_migration(mocker):
+    animal = Carnivore(10, 20)
+    animal.calculate_fitness()
+    migration_prob = animal.guideline_params["mu"] * animal.fitness
+    val = migration_prob - 0.01
+    mocker.patch('random.random', return_value=val)
+    animal.migration()
+    assert animal.migrates is True
+
+
+def test_aging():
+    animal = Herbivore(5, 5)
+    animal.commence_aging()
+    assert animal.age == 6
+
+
+def test_death(mocker):
+    animal = Herbivore(6, 12)
+    animal.calculate_fitness()
+    death_prob = animal.guideline_params["omega"] * (1 - animal.fitness)
+    val = death_prob - 0.01
+    mocker.patch('random.random', return_value=val)
+    animal.death()
+    assert animal.dead is True
+
+
+def test_procreation(mocker):
     animal = Herbivore(10, 20)
     animal.calculate_fitness()
     migration_prob = animal.guideline_params["mu"] * animal.fitness
