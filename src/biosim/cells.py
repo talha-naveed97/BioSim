@@ -43,7 +43,7 @@ class Cell:
         Parameters
         ----------
         params
-            Dictionary {'f_max': value} that sets the new default value of fodder a cell.
+            Dictionary {'f_max': value} that sets the new default value of fodder in a cell.
 
             |
 
@@ -260,9 +260,19 @@ def set_cell_params(land_type, params):
 
     """
 
-    if land_type == 'H':
+    if land_type not in ['H', 'L', 'D', 'W']:
+        raise KeyError('Invalid keys for land_tpe.')
+
+    if 'f_max' not in params.keys():
+        raise KeyError('Invalid keys for params. Only valid key is ''f_max''')
+
+    if land_type in ['D', 'W']:
+        raise KeyError('Invalid key for land_tpe. Desert and Water cells have no fodder.')
+
+    if type(params['f_max']) != int or type(params['f_max']) != float or params['f_max'] < 0:
+        raise ValueError('f_max must be numeric and cannot be negative.')
+
+    if land_type == 'H' and 'f_max' in params.keys():
         Highland.update_defaults(params)
-    elif land_type == 'L':
+    elif land_type == 'L' and 'f_max' in params.keys():
         Lowland.update_defaults(params)
-    else:
-        raise ValueError('Invalid key for land_type')

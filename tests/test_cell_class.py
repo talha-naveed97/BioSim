@@ -73,3 +73,26 @@ class TestCellClass:
         migration_cells = self.lowland.get_migration_possibilities()
         correct_cells = [(6, 11), (6, 13), (5, 12), (7, 12)]
         assert set(migration_cells) == set(correct_cells)
+
+    @staticmethod
+    def test_set_cell_params_keys():
+        with pytest.raises(KeyError):
+            cells.set_cell_params('wrong_land_key', {'f_max': 10.})
+
+        with pytest.raises(KeyError):
+            cells.set_cell_params('H', {'wrong_params_key': 10.})
+
+        with pytest.raises(KeyError):
+            cells.set_cell_params('D', {'f_max': 10.})
+
+        with pytest.raises(KeyError):
+            cells.set_cell_params('W', {'f_max': 10.})
+
+
+    @staticmethod
+    def test_set_cell_params_values():
+        with pytest.raises(ValueError):
+            cells.set_cell_params('L', {'f_max': -10})
+
+        with pytest.raises(ValueError):
+            cells.set_cell_params('L', {'f_max': 'string'})
