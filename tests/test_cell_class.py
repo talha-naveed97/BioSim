@@ -15,7 +15,7 @@ class TestCellClass:
         self.water = cells.Water((1, 1))
         self.desert = cells.Desert((5, 5))
         self.highland = cells.Highland((10, 5))
-        self.lowland = cells.Lowland((10, 12))
+        self.lowland = cells.Lowland((6, 12))
 
     def test_water_not_accessible(self):
         assert self.water.allows_animal is False
@@ -33,12 +33,17 @@ class TestCellClass:
         assert self.water.f_max == 0
 
     def test_desert_has_no_fodder(self):
-        assert self.water.f_max == 0
+        assert self.desert.f_max == 0
 
     @staticmethod
     def test_update_defaults():
         cells.Highland.update_defaults({'f_max': 10.})
         assert cells.Highland.f_max == 10.
+
+    def test_fodder_reset(self):
+        self.lowland.food_status = 5.
+        self.lowland.reset_cell()
+        assert self.lowland.food_status == self.lowland.f_max
 
     def test_add_animal(self):
         herb = [{'species': 'Herbivore', 'age': 1, 'weight': 10} for _ in range(5)]
@@ -47,3 +52,9 @@ class TestCellClass:
         self.lowland.add_animal(carn)
         assert len(self.lowland.herbivores) == 5
         assert len(self.lowland.carnivores) == 7
+
+    def test_loc_correctly_specified(self):
+        assert self.water.loc == (1, 1)
+        assert self.desert.loc == (5, 5)
+        assert self.highland.loc == (10, 5)
+        assert self.lowland.loc == (6, 12)
