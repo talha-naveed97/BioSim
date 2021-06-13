@@ -11,7 +11,8 @@ __author__ = 'Hans Ekkehard Plesser, NMBU'
 import textwrap
 from biosim.simulation import BioSim
 
-geogr = """WWW
+geogr = """\
+           WWW
            WLW
            WWW"""
 geogr = textwrap.dedent(geogr)

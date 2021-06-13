@@ -12,7 +12,8 @@ from biosim.simulation import BioSim
 
 if __name__ == '__main__':
 
-    geogr = """WWWWWWWWWWWWWWWWWWWWW
+    geogr = """\
+               WWWWWWWWWWWWWWWWWWWWW
                WHHHHHLLLLWWLLLLLLLWW
                WHHHHHLLLLWWLLLLLLLWW
                WHHHHHLLLLWWLLLLLLLWW
