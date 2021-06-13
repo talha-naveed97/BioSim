@@ -58,3 +58,18 @@ class TestCellClass:
         assert self.desert.loc == (5, 5)
         assert self.highland.loc == (10, 5)
         assert self.lowland.loc == (6, 12)
+
+    def test_total_migration_cells(self):
+        migration_cells = self.lowland.get_migration_possibilities()
+        assert len(migration_cells) == 4
+
+    def test_no_diagonal_migration(self):
+        migration_cells = self.lowland.get_migration_possibilities()
+        diagonal_cells = [(5, 11), (5, 13), (7, 11), (7, 13)]
+        common_cells = set(migration_cells).intersection(diagonal_cells)
+        assert common_cells == set([])
+
+    def test_correct_migration_cells(self):
+        migration_cells = self.lowland.get_migration_possibilities()
+        correct_cells = [(6, 11), (6, 13), (5, 12), (7, 12)]
+        assert set(migration_cells) == set(correct_cells)
