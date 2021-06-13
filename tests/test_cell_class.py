@@ -88,7 +88,6 @@ class TestCellClass:
         with pytest.raises(KeyError):
             cells.set_cell_params('W', {'f_max': 10.})
 
-
     @staticmethod
     def test_set_cell_params_values():
         with pytest.raises(ValueError):
