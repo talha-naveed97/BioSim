@@ -3,6 +3,6 @@ Simulation
 
 The simulation module
 ----------------------
-.. automodule:: biosim.BioSim
+.. automodule:: biosim.simulation
    :members:
 

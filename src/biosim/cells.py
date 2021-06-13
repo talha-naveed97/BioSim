@@ -43,7 +43,7 @@ class Cell:
         Parameters
         ----------
         params
-            Dictionary {'f_max': value} that sets the new default value of fodder a cell.
+            Dictionary {'f_max': value} that sets the new default value of fodder in a cell.
 
             |
 
@@ -64,10 +64,12 @@ class Cell:
 
         """
         for x in animals:
-            if x['species'] == 'Herbivore':
+            if x['species'] not in ['Herbivore', 'Carnivore']:
+                raise KeyError('Invalid key for species. Valid keys are: Herbivore and Carnivore ')
+            elif x['species'] == 'Herbivore':
                 obj = Herbivore(x['age'], x['weight'])
                 self.herbivores.append(obj)
-            else:
+            elif x['species'] == 'Carnivore':
                 obj = Carnivore(x['age'], x['weight'])
                 self.carnivores.append(obj)
 
@@ -131,32 +133,32 @@ class Cell:
 
     def cell_annual_lifecycle(self):
         """
-                Run the annual cycle for a single cell in following order:
-                    - Feeding
-                    - Procreating
-                    - Migration
-                    - Aging
-                    - Loss of weight
-                    - Death
+        Run the annual cycle for a single cell in following order:
+            - Feeding
+            - Procreating
+            - Migration
+            - Aging
+            - Loss of weight
+            - Death
 
-                Returns
-                -------
-                list
-                    Fitness values of herbivores
-                list
-                    Fitness values of carnivores
-                list
-                    Ages of herbivores
-                list
-                    Ages of carnivores
-                list
-                    Weights of herbivores
-                list
-                    Weights of carnivores
+        Returns
+        -------
+        list
+            Fitness values of herbivores
+        list
+            Fitness values of carnivores
+        list
+            Ages of herbivores
+        list
+            Ages of carnivores
+        list
+            Weights of herbivores
+        list
+            Weights of carnivores
 
-                    |
+            |
 
-                """
+        """
 
         # Feeding
         self.animals_feed()
@@ -191,6 +193,16 @@ class Cell:
         """
         return [(self.loc[0] - 1, self.loc[1]), (self.loc[0] + 1, self.loc[1]),
                 (self.loc[0], self.loc[1] - 1), (self.loc[0], self.loc[1] + 1)]
+
+    def reset_cell(self):
+        """
+
+        Reset the amount of fodder available in cells.
+
+        |
+
+        """
+        self.food_status = self.f_max
 
 
 class Water(Cell):
@@ -262,15 +274,26 @@ def set_cell_params(land_type, params):
         |
 
     """
-    if land_type == 'D' or land_type == 'W':
-        raise ValueError('Water and Desert food values cannot be changed')
-    elif land_type == 'L':
-        Lowland.update_defaults(params)
-    elif land_type == 'H':
+
+    if land_type not in ['H', 'L', 'D', 'W']:
+        raise KeyError('Invalid keys for land_tpe.')
+
+    if 'f_max' not in params.keys():
+        raise KeyError('Invalid keys for params. Only valid key is ''f_max''')
+
+    if land_type in ['D', 'W']:
+        raise KeyError('Invalid key for land_tpe. Desert and Water cells have no fodder.')
+
+    if type(params['f_max']) != int or type(params['f_max']) != float or params['f_max'] < 0:
+        raise ValueError('f_max must be numeric and cannot be negative.')
+
+    if land_type == 'H' and 'f_max' in params.keys():
         Highland.update_defaults(params)
+    elif land_type == 'L' and 'f_max' in params.keys():
+        Lowland.update_defaults(params)
+    elif land_type == 'D':
+        Desert.update_defaults(params)
+    elif land_type == 'W':
+        raise ValueError('Water cannot have food')
     else:
-        raise ValueError('Invalid landscape type', land_type)
-
-
-def update_animal_params(species, params):
-    set_animal_params(species, params)
+        raise ValueError('Cannot Identify Land Type')

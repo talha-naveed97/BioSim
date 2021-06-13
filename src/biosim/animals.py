@@ -157,11 +157,32 @@ class Animals:
             self.migrates = False
 
     def commence_aging(self):
+        """
+        Increases animal age by 1 and recomputes animal weight and fitness.
+
+        |
+
+        """
         self.age += 1
         self.weight -= self.weight * self.guideline_params["eta"]
         self.calculate_fitness()
 
     def death(self):
+        """
+        Compute probability of the animal dying and set ``dead`` as *True*
+        if probability is higher than a random threshold. This probability is given by:
+
+            .. math::
+                p_{death} =
+                \\begin{cases}
+                    1 & \\text{if } w_{animal} = 0
+
+                    \\omega(1 - \\Phi) & \\text{otherwise.}
+                \\end{cases}
+
+        |
+
+        """
         death_prob = 0
         if self.weight <= 0:
             self.dead = True
@@ -173,6 +194,56 @@ class Animals:
 
 
 class Herbivore(Animals):
+    """
+    The 'Herbivore' animal type, subclass of Animals class: feeds on fodder in lowland and highland.
+    Herbivores eat in random order the amount *F* from the available fodder
+    and its weight increases by:
+
+    .. math::
+        \\Delta w_{herb} = \\beta F
+
+
+    .. list-table:: Default characteristics of Herbivores
+            :widths: 25 25
+            :header-rows: 1
+
+            * - Parameter name
+              - Value
+
+            * - ``w_birth``
+              - 8.0
+            * - ``sigma_birth``
+              - 1.5
+            * - ``beta``
+              - 0.9
+            * - ``eta``
+              - 0.05
+            * - ``a_half``
+              - 40.0
+            * - ``phi_age``
+              - 0.6
+            * - ``w_half``
+              - 10.0
+            * - ``phi_weight``
+              - 0.1
+            * - ``mu``
+              - 0.25
+            * - ``gamma``
+              - 0.2
+            * - ``zeta``
+              - 3.5
+            * - ``xi``
+              - 1.2
+            * - ``omega``
+              - 0.4
+            * - ``F``
+              - 10.0
+            * - ``DeltaPhiMax``
+              - None
+
+    |
+
+    """
 
     def __init__(self, age, weight):
         super().__init__(age, weight)
@@ -195,6 +266,20 @@ class Herbivore(Animals):
                         }
 
     def feeds(self, cell_food_amount):
+        """
+        Feeding function for herbivores.
+
+        Parameters
+        ----------
+        cell_food_amount : float
+            The amount of food available in the cell.
+
+        Returns
+        -------
+        feed_left : float
+            The amount of food left in the cell after herbivore has eaten
+
+        """
         f = self.guideline_params["F"]
         if f > cell_food_amount:
             f = cell_food_amount
@@ -205,6 +290,66 @@ class Herbivore(Animals):
 
 
 class Carnivore(Animals):
+    """
+    The 'Carnivore' animal type, subclass of Animals class: preys on herbivores but do not prey on each other.
+    A carnivore continues to kills herbivores until it has eaten a specific amount
+    or until it has tried to kill each herbivore present in the cell. The probability
+    *p* of carnivores killing a herbivore is given by:
+
+        .. math::
+                p =
+                \\begin{cases}
+                    0 & \\text{if } \\Phi_{carn} \\le \\Phi_{herb}
+
+                    \\frac{\\Phi_{carn} - \\Phi_{herb}}{\\Delta \\Phi_{max}} &
+                    \\text{if } 0 \\le \\Phi_{carn} - \\Phi_{herb} \\le \\Phi_{max}
+
+                    1 & \\text{otherwise.}
+
+                \\end{cases}
+
+
+        .. list-table:: Default characteristics of Carnivores
+            :widths: 25 25
+            :header-rows: 1
+
+            * - Parameter name
+              - Value
+
+            * - ``w_birth``
+              - 6.0
+            * - ``sigma_birth``
+              - 1.0
+            * - ``beta``
+              - 0.75
+            * - ``eta``
+              - 0.125
+            * - ``a_half``
+              - 40.0
+            * - ``phi_age``
+              - 0.3
+            * - ``w_half``
+              - 4.0
+            * - ``phi_weight``
+              - 0.4
+            * - ``mu``
+              - 0.4
+            * - ``gamma``
+              - 0.8
+            * - ``zeta``
+              - 3.5
+            * - ``xi``
+              - 1.1
+            * - ``omega``
+              - 0.8
+            * - ``F``
+              - 50.0
+            * - ``DeltaPhiMax``
+              - 10.0
+
+    |
+
+    """
 
     def __init__(self, age, weight):
         super().__init__(age, weight)
@@ -227,6 +372,20 @@ class Carnivore(Animals):
                         }
 
     def feeds(self, herbivores):
+        """
+        Function for carnivores preying on herbivores.
+
+        Parameters
+        ----------
+        herbivores : list
+            The list of herbivores present in the cell.
+
+        Returns
+        -------
+        feed_left : float
+            The amount of food left in the cell after herbivore has eaten
+
+        """
         continue_eating_cycle = True
         amount_eaten = 0
         for herbivore in herbivores:
@@ -255,4 +414,4 @@ def set_animal_params(species, params):
     elif species == 'Carnivore':
         Carnivore.update_defaults(params)
     else:
-        raise ValueError('Cannot Identify Species')
+        raise ValueError('Cannot identify species')
