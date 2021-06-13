@@ -4,7 +4,7 @@
 Test set for Animals class for INF200 June 2021.
 """
 
-from src.biosim.animals import *
+from biosim.animals import *
 
 
 def test_update_params():
@@ -21,7 +21,7 @@ def test_calculate_fitness():
     animal = Herbivore(10, 20)
     q_age = 1 / (1 + math.exp(animal.guideline_params["phi_age"] * (age - animal.guideline_params["a_half"])))
     q_weight = 1 / (1 + math.exp(-
-        animal.guideline_params["phi_weight"] * (weight - animal.guideline_params["w_half"])))
+                                 animal.guideline_params["phi_weight"] * (weight - animal.guideline_params["w_half"])))
     fitness = q_age * q_weight
     animal.calculate_fitness()
     assert animal.fitness == fitness
@@ -34,4 +34,4 @@ def test_migration(mocker):
     val = migration_prob - 0.01
     mocker.patch('random.random', return_value=val)
     animal.migration()
-    assert animal.migrates == True
+    assert animal.migrates is True
