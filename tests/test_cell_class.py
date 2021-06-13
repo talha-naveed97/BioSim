@@ -5,7 +5,7 @@ Test set for Cells class for INF200 June 2021.
 """
 
 import pytest
-from src.biosim import cells
+from biosim import cells
 
 
 class TestCellClass:
@@ -80,8 +80,16 @@ class TestCellClass:
         carn = [{'species': 'Carnivore', 'age': 2, 'weight': 5} for _ in range(7)]
         self.lowland.add_animal(herb)
         self.lowland.add_animal(carn)
-        assert len(self.lowland.herbivores) == 5
-        assert len(self.lowland.carnivores) == 7
+        assert len(self.lowland.herbivores) == len(herb)
+        assert len(self.lowland.carnivores) == len(carn)
+
+    def test_add_animal_keys(self):
+        """
+        Test that error is raised in case of incompatible keys in add_animal.
+        """
+        animal1 = [{'species': 'wrong_key', 'age': 1, 'weight': 10} for _ in range(2)]
+        with pytest.raises(KeyError):
+            self.highland.add_animal(animal1)
 
     def test_loc_correctly_specified(self):
         """
