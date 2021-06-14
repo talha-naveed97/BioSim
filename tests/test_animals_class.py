@@ -5,7 +5,7 @@ Test set for Animals class for INF200 June 2021.
 """
 
 from biosim import animals
-from biosim.animals import Herbivore, Carnivore
+from biosim.animals import Herbivore, Carnivore, set_animal_params
 from biosim.cells import Lowland
 import math
 import pytest
@@ -100,3 +100,24 @@ def test_herbivore_feeds():
     feed_left_test = cell.food_status - f
     feed_left = animal.feeds(cell.food_status)
     assert feed_left_test == feed_left
+
+
+def test_carnivore_feeds(mocker):
+    set_animal_params('Carnivore', {'F': 20})
+    herbivores = [Herbivore(1, 10) for _ in range(2)]
+    carn = Carnivore(10, 10)
+    mocker.patch('random.random', return_value=0)
+    carn.feeds(herbivores)
+    assert len([herbivore for herbivore in herbivores if not herbivore.dead]) == 0
+
+
+def test_carnivore_weight_change(mocker):
+    set_animal_params('Carnivore', {'F': 20})
+    herbivores = [Herbivore(1, 10) for _ in range(2)]
+    carn = Carnivore(10, 10)
+    mocker.patch('random.random', return_value=0)
+    weight = carn.weight
+    carn.feeds(herbivores)
+    for herbivore in herbivores:
+        weight += carn.guideline_params["beta"] * herbivore.weight
+    assert weight == carn.weight
