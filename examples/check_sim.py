@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import textwrap
-import matplotlib.pyplot as plt
 
 from biosim.simulation import BioSim
 

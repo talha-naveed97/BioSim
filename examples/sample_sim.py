@@ -8,6 +8,7 @@ Full island simulation with herbivores and carnivores.
 __author__ = 'Hans Ekkehard Plesser, NMBU'
 
 import textwrap
+import time
 from biosim.simulation import BioSim
 
 if __name__ == '__main__':
@@ -54,7 +55,10 @@ if __name__ == '__main__':
                              'weight': {'max': 60, 'delta': 2}},
                  img_dir='results',
                  img_base='sample')
-    sim.simulate(400)
+    start = time.time()
+    sim.simulate(200)
+    stop = time.time()
+    print(stop-start)
     #sim.make_movie()
 
     input('Press ENTER')

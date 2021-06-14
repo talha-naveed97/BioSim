@@ -5,6 +5,8 @@ import subprocess
 
 # If you installed ffmpeg using conda or installed both softwares in
 # standard ways on your computer, no changes should be required.
+from matplotlib import gridspec
+
 _FFMPEG_BINARY = 'ffmpeg'
 _MAGICK_BINARY = 'magick'
 
@@ -13,18 +15,22 @@ _MAGICK_BINARY = 'magick'
 _DEFAULT_GRAPHICS_DIR = os.path.join('..', 'data')
 _DEFAULT_GRAPHICS_NAME = 'dv'
 _DEFAULT_IMG_FORMAT = 'png'
-_DEFAULT_MOVIE_FORMAT = 'mp4'   # alternatives: mp4, gif
+_DEFAULT_MOVIE_FORMAT = 'mp4'  # alternatives: mp4, gif
 
 
 class Graphics:
     def __init__(self, img_dir=None, img_name=None, img_fmt=None):
-        self.plots = [{'Name': 'Geography', 'Plot': None, 'Position': 1},
-                      {'Name': 'Number_of_species', 'Plot': None, 'Position': 3},
-                      {'Name': 'Herbivore_Distribution', 'Plot': None, 'Position': 4},
-                      {'Name': 'Carnivore_Distribution', 'Plot': None, 'Position': 6},
-                      {'Name': 'Fitness_Histogram', 'Plot': None, 'Position': 7},
-                      {'Name': 'Weight_Histogram', 'Plot': None, 'Position': 8},
-                      {'Name': 'Age_Histogram', 'Plot': None, 'Position': 9},
+        self.plots = [{'Name': 'Geography', 'Plot': None, 'row': 1, 'Position': 1, 'title': "Island"},
+                      {'Name': 'Number_of_species', 'Plot': None, 'row': 1, 'Position': 3, 'title': "Animal Count"},
+                      {'Name': 'Herbivore_Distribution', 'Plot': None, 'row': 2, 'Position': 1,
+                       'title': "Herbivore "
+                                "Distribution"},
+                      {'Name': 'Carnivore_Distribution', 'Plot': None, 'row': 2, 'Position': 3,
+                       'title': "Carnivore "
+                                "Distribution"},
+                      {'Name': 'Fitness_Histogram', 'Plot': None, 'row': 3, 'Position': 1, 'title': "Fitness"},
+                      {'Name': 'Age_Histogram', 'Plot': None, 'row': 3, 'Position': 2, 'title': "Age"},
+                      {'Name': 'Weight_Histogram', 'Plot': None, 'row': 3, 'Position': 3, 'title': "Weight"},
                       ]
         self.line_herbivores = []
         self.line_carnivores = []
@@ -35,6 +41,7 @@ class Graphics:
         self.year_txt = None
         self.year_template = 'Year: {:5d}'
         self.fig = None
+        self._gs = None
         self.img_dir = img_dir
 
         if self.img_dir is None:
@@ -58,9 +65,11 @@ class Graphics:
 
     def setup_visualization(self, rows, cols, total_years, cmap, hist_specs, y_max,
                             img_years, map_rgb, herb_dist, carn_dist):
-        self.fig = plt.figure()
+        self.fig = plt.figure(constrained_layout=True)
+        self._gs = gridspec.GridSpec(ncols=rows, nrows=cols, figure=self.fig)
         for plot in self.plots:
-            ax = self.fig.add_subplot(rows, cols, plot['Position'])
+            ax = self.fig.add_subplot(self._gs[plot['row'] - 1, plot['Position'] - 1])
+            ax.set_title(plot['title'], fontweight='bold')
             plot['Plot'] = ax
         self.make_map(map_rgb)
         self.update_number_of_species_graph(True, 0, total_years, 0, 0, y_max)
@@ -73,7 +82,7 @@ class Graphics:
         self.year_txt = self.year_counter.text(0.5, 0.5, self.year_template.format(0),
                                                horizontalalignment='center',
                                                verticalalignment='center',
-                                               transform=self.year_counter.transAxes)
+                                               transform=self.year_counter.transAxes, fontsize=16)
         self.img_years = img_years
         # if self.img_dir is not None and os.path.exists(self.img_dir):
         #     for filename in os.listdir(self.img_dir):
@@ -94,10 +103,8 @@ class Graphics:
     def make_map(self, map_rgb):
         ax = [pt['Plot'] for pt in self.plots if pt['Name'] == 'Geography'][0]
         ax.imshow(map_rgb)
-        ax.set_xticks(range(len(map_rgb[0])))
-        ax.set_xticklabels(range(1, 1 + len(map_rgb[0])))
-        ax.set_yticks(range(len(map_rgb)))
-        ax.set_yticklabels(range(1, 1 + len(map_rgb)))
+        ax.set_xticks(np.arange(0, len(map_rgb[0]), 5))
+        ax.set_yticks(np.arange(0, len(map_rgb), 2))
 
     def update_visualization(self, year, total_years, cmax_animals, hist_specs, y_max,
                              herbivore_data, carnivore_data):
@@ -113,7 +120,7 @@ class Graphics:
                                   carnivore_data["age"], hist_specs['age'])
         self.year_txt.set_text(self.year_template.format(year))
         self.show_plots()
-        #self._save_graphics(year)
+        # self._save_graphics(year)
 
     def update_number_of_species_graph(self, is_init, current_year, total_years,
                                        herbivore_count, carnivores_count, y_max):
@@ -125,9 +132,10 @@ class Graphics:
             ax.set_xlim(0, total_years)
             ax.set_ylim(0, self.max_species_count)
             self.line_herbivores = ax.plot(np.arange(total_years),
-                                           np.full(total_years, np.nan), 'b-')[0]
+                                           np.full(total_years, np.nan), 'b-', label='Herbivores')[0]
             self.line_carnivores = ax.plot(np.arange(total_years),
-                                           np.full(total_years, np.nan), 'r-')[0]
+                                           np.full(total_years, np.nan), 'r-', label='Carnivores')[0]
+            ax.legend()
         else:
             if total_years > len(self.line_herbivores.get_xdata()):
                 x_data_h, y_data_h = self.line_herbivores.get_data()
@@ -178,38 +186,35 @@ class Graphics:
 
     def update_fitness_histogram(self, fitness_values_herbivores,
                                  fitness_values_carnivores, fitness_hist_specs):
-        ax = [pt['Plot'] for pt in self.plots if pt['Name'] == 'Fitness_Histogram'][0]
-        ax.clear()
-        ax.set_title('Fitness histogram',
-                     verticalalignment='bottom')
+        pt = [pt for pt in self.plots if pt['Name'] == 'Fitness_Histogram'][0]
+        pt['Plot'].clear()
+        pt['Plot'].set_title(pt['title'], fontweight='bold')
         bins = int(fitness_hist_specs['max'] / fitness_hist_specs['delta'])
-        ax.hist((fitness_values_herbivores, fitness_values_carnivores), bins,
-                (0, fitness_hist_specs['max']), histtype='step', linewidth=3,
-                label=('Herbivores', 'Carnivores'), color=('b', 'r'))
-        ax.legend()
+        pt['Plot'].hist((fitness_values_herbivores, fitness_values_carnivores), bins,
+                        (0, fitness_hist_specs['max']), histtype='step', linewidth=2,
+                        label=('Herbivores', 'Carnivores'), color=('b', 'r'))
+        pt['Plot'].legend()
 
     def update_age_histogram(self, age_values_herbivores, age_values_carnivores, age_hist_specs):
-        ax = [pt['Plot'] for pt in self.plots if pt['Name'] == 'Age_Histogram'][0]
-        ax.clear()
-        ax.set_title('Age histogram',
-                     verticalalignment='bottom')
+        pt = [pt for pt in self.plots if pt['Name'] == 'Age_Histogram'][0]
+        pt['Plot'].clear()
+        pt['Plot'].set_title(pt['title'], fontweight='bold')
         bins_age = int(age_hist_specs['max'] / age_hist_specs['delta'])
-        ax.hist((age_values_herbivores, age_values_carnivores), bins_age,
-                (0, age_hist_specs['max']), histtype='step', linewidth=3,
-                label=('Herbivores', 'Carnivores'), color=('b', 'r'))
-        ax.legend()
+        pt['Plot'].hist((age_values_herbivores, age_values_carnivores), bins_age,
+                        (0, age_hist_specs['max']), histtype='step', linewidth=2,
+                        label=('Herbivores', 'Carnivores'), color=('b', 'r'))
+        pt['Plot'].legend()
 
     def update_weight_histogram(self, weight_values_herbivores,
                                 weight_values_carnivores, weight_hist_specs):
-        ax = [pt['Plot'] for pt in self.plots if pt['Name'] == 'Weight_Histogram'][0]
-        ax.clear()
-        ax.set_title('Weight histogram',
-                     verticalalignment='bottom')
+        pt = [pt for pt in self.plots if pt['Name'] == 'Weight_Histogram'][0]
+        pt['Plot'].clear()
+        pt['Plot'].set_title(pt['title'], fontweight='bold')
         bins = int(weight_hist_specs['max'] / weight_hist_specs['delta'])
-        ax.hist((weight_values_herbivores, weight_values_carnivores), bins,
-                (0, weight_hist_specs['max']), histtype='step', linewidth=3,
-                label=('Herbivores', 'Carnivores'), color=('b', 'r'))
-        ax.legend()
+        pt['Plot'].hist((weight_values_herbivores, weight_values_carnivores), bins,
+                        (0, weight_hist_specs['max']), histtype='step', linewidth=2,
+                        label=('Herbivores', 'Carnivores'), color=('b', 'r'))
+        pt['Plot'].legend()
 
     def _save_graphics(self, year):
         """Saves graphics to file if file name given."""
