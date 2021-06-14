@@ -186,23 +186,13 @@ class Cell:
         .. figure:: cells.png
             :width: 200
 
-        Figure 1: Cells where animals can migrate, no diagonal movement.
+        Figure 2: Cells where animals can migrate, no diagonal movement.
 
         |
 
         """
         return [(self.loc[0] - 1, self.loc[1]), (self.loc[0] + 1, self.loc[1]),
                 (self.loc[0], self.loc[1] - 1), (self.loc[0], self.loc[1] + 1)]
-
-    def reset_cell(self):
-        """
-
-        Reset the amount of fodder available in cells.
-
-        |
-
-        """
-        self.food_status = self.f_max
 
 
 class Water(Cell):
@@ -298,6 +288,6 @@ def set_cell_params(land_type, params):
     else:
         raise ValueError('Cannot Identify Land Type')
 
-def update_animal_params(species,params):
-    set_animal_params(species,params)
 
+def update_animal_params(species, params):
+    set_animal_params(species, params)

@@ -1,15 +1,43 @@
+# -*- coding: utf-8 -*-
+
+"""
+This module implements the Island class that models the complete geography of Rossumøya island.
+
+        .. figure:: island.png
+            :width: 300
+
+            Figure 1: Geography of Rossumøya island in *check_sim.py*
+"""
+
 from .cells import Water, Lowland, Highland, Desert, set_cell_params, update_animal_params
 import random
 from .graphics import Graphics
 
 
 class Island:
+    """
+    The Island class.
+
+    Parameters
+    ----------
+    geo : str
+        String where each character represents the landscape of each cell on the island.
+    img_dir : str
+        Path to the directory where images from the simulation are saved.
+    img_name : str
+        Filenames of images.
+    img_fmt :
+        File format of the image.
+
+        |
+
+    """
     def __init__(self, geo, img_dir=None, img_name=None, img_fmt=None):
         self.geo = geo
         self.map_rgb = []
         self.cell_list = []
         self.add_cells()
-        self.graphics =  Graphics(img_dir, img_name, img_fmt)
+        self.graphics = Graphics(img_dir, img_name, img_fmt)
         self.fitness_values_herbivores = []
         self.fitness_values_carnivores = []
         self.age_values_herbivores = []
@@ -18,6 +46,12 @@ class Island:
         self.weight_values_carnivores = []
 
     def add_cells(self):
+        """
+        Add cells to the Island model.
+
+        |
+
+        """
         map_list = self.geo.splitlines()
         rows = len(map_list)
         for row in range(1, rows + 1):
@@ -26,7 +60,7 @@ class Island:
             chars = len(line)
             if row > 1 and chars != len(map_list[row - 2]):
                 raise ValueError('Inconsistent row length')
-            cell = None
+
             for col in range(1, chars + 1):
                 land_type = line[col - 1]
                 if (row == 1 or row == rows or col == 1 or col == chars) \
@@ -47,13 +81,53 @@ class Island:
                 self.cell_list.append(cell)
             self.map_rgb.append(rgb_cells_in_row)
 
-    def update_cell_params(self, landscape, params):
+    @staticmethod
+    def update_cell_params(landscape, params):
+        """
+        Update default parameters of cells.
+
+        Parameters
+        ----------
+        landscape : str
+            Defines the cell type.
+
+        params : dict
+            Dictionary {*f_max*: value} that sets the new default value of fodder in a cell.
+
+
+        .. seealso::
+                - cells.set_cell_params()
+
+
+        |
+
+        """
         set_cell_params(landscape, params)
 
-    def update_animal_params(self, species, params):
+    @staticmethod
+    def update_animal_params(species, params):
+        """
+        Update default characteristics of animals.
+
+        .. seealso::
+                - cells.update_animal_params(species, params)
+                - animals.set_animal_params(species, params)
+
+        |
+
+        """
         update_animal_params(species, params)
 
     def add_population(self, species):
+        """
+        Add population (herbivores and carnivores) to the cells on the island.
+
+        .. seealso::
+                - cells.add_animal(animals)
+
+        |
+
+        """
         for record in species:
             loc = record['loc']
             animals = record['pop']
@@ -61,6 +135,15 @@ class Island:
             cell.add_animal(animals)
 
     def commence_annual_cycle(self, year_number):
+        """
+        Run the annual lifecycle of cells on the island.
+
+        .. seealso::
+                - cells.cell_annual_lifecycle()
+
+        |
+
+        """
         self.fitness_values_herbivores = []
         self.fitness_values_carnivores = []
         self.age_values_herbivores = []
@@ -73,7 +156,7 @@ class Island:
             if year_number > 1:
                 self.commence_migration(cell)
             herbivores_fitness, carnivores_fitness, herbivores_age, \
-            carnivores_age, herbivores_weight, carnivores_weight = cell.cell_annual_lifecycle()
+                carnivores_age, herbivores_weight, carnivores_weight = cell.cell_annual_lifecycle()
             self.fitness_values_herbivores.extend(herbivores_fitness)
             self.fitness_values_carnivores.extend(carnivores_fitness)
             self.age_values_herbivores.extend(herbivores_age)
@@ -86,9 +169,9 @@ class Island:
         animals_for_migration = [animal for animal in cell.herbivores + cell.carnivores if
                                  animal.migrates]
         if len(animals_for_migration) > 0:
-            migration_possibilies = cell.get_migration_possibilities()
+            migration_possibilities = cell.get_migration_possibilities()
             for animal in animals_for_migration:
-                migrating_to = self.get_random_cell(migration_possibilies)
+                migrating_to = self.get_random_cell(migration_possibilities)
                 migrating_cell = [cl for cl in self.cell_list
                                   if cl.loc[0] == migrating_to[0] and cl.loc[1] == migrating_to[1]][0]
                 if migrating_cell.allows_animal:
@@ -101,7 +184,8 @@ class Island:
                         index = cell.carnivores.index(animal)
                         cell.carnivores.pop(index)
 
-    def get_random_cell(self, possibilities):
+    @staticmethod
+    def get_random_cell(possibilities):
         _dir = random.randint(0, 3)
         return possibilities[_dir]
 
@@ -114,13 +198,14 @@ class Island:
         total_animals = sum(len(c.herbivores) + len(c.carnivores) for c in self.cell_list)
         return total_animals
 
-    def setup_visualization(self,rows, cols, total_years, cmap, hist_specs, y_max, img_years):
+    def setup_visualization(self, rows, cols, total_years, cmap, hist_specs, y_max, img_years):
         herb_dist, carn_dist = self.get_distributions()
-        self.graphics.setup_visualization(rows, cols, total_years, cmap, hist_specs, y_max, img_years,self.map_rgb,
+        self.graphics.setup_visualization(rows, cols, total_years, cmap, hist_specs, y_max, img_years, self.map_rgb,
                                           herb_dist, carn_dist)
 
-    def update_visualization(self,year, total_years, herbivore_count, carnivores_count, cmax_animals, hist_specs, y_max):
-        herbivore_dist,carnivore_dist = self.get_distributions()
+    def update_visualization(self, year, total_years, herbivore_count, carnivores_count,
+                             cmax_animals, hist_specs, y_max):
+        herbivore_dist, carnivore_dist = self.get_distributions()
         herbivore_date = {
             "count": herbivore_count,
             "fitness": self.fitness_values_herbivores,
@@ -136,7 +221,7 @@ class Island:
             "weight": self.weight_values_carnivores,
             "distribution": carnivore_dist
         }
-        self.graphics.update_visualization(year, total_years,cmax_animals, hist_specs, y_max,
+        self.graphics.update_visualization(year, total_years, cmax_animals, hist_specs, y_max,
                                            herbivore_date, carnivore_date)
 
     def get_distributions(self):

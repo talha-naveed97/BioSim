@@ -60,8 +60,8 @@ class Animals:
                    Dictionary of *guideline_params* for each type of animal.
 
                    .. seealso::
-                       - animals.Herbivore()
-                       - animals.Carnivore()
+                       - cells.Herbivore()
+                       - cells.Carnivore()
 
                    |
 
@@ -121,7 +121,7 @@ class Animals:
 
                    |
 
-               """
+        """
 
         birth_prob = 0
         if cell_animal_count > 1 and self.weight >= self.guideline_params["zeta"] * (self.guideline_params["w_birth"]
@@ -141,15 +141,15 @@ class Animals:
 
     def migration(self):
         """
-               Compute migration probability for the animal:
-                   .. math::
-                       \\mu \\Phi
+        Compute migration probability for the animal:
+            .. math::
+                \\mu \\Phi
 
                and set ``migrates`` as *True* if probability is higher than a random threshold.
 
-               |
+            |
 
-               """
+        """
         migration_prob = self.guideline_params["mu"] * self.fitness
         if migration_prob > random.random():
             self.migrates = True
