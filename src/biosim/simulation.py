@@ -107,13 +107,14 @@ class BioSim:
         for x in range(self.current_year, self.num_years):
             self.current_year = x + 1
             print("Year:", self.current_year)
-            self.island.commence_annual_cycle(self.current_year)
+            self.island.commence_annual_cycle()
             counts = self.num_animals_per_species
             if self.vis_years > 0 and self.current_year % self.vis_years == 0:
                 self.island.update_visualization(self.current_year, self.num_years,
                                                  counts['Herbivore'], counts['Carnivore'],
                                                  self.c_max_animal, self.hist_specs,
                                                  self.y_max_animals)
+            print(self.num_animals_per_species)
 
     def add_population(self, population):
         """

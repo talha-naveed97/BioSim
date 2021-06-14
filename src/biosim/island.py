@@ -38,12 +38,12 @@ class Island:
         self.cell_list = []
         self.add_cells()
         self.graphics = Graphics(img_dir, img_name, img_fmt)
-        self.fitness_values_herbivores = []
-        self.fitness_values_carnivores = []
-        self.age_values_herbivores = []
-        self.age_values_carnivores = []
-        self.weight_values_herbivores = []
-        self.weight_values_carnivores = []
+        self.fitness_values = {"Herbivore": [],
+                               "Carnivore": []}
+        self.age_values = {"Herbivore": [],
+                           "Carnivore": []}
+        self.weight_values = {"Herbivore": [],
+                              "Carnivore": []}
 
     def add_cells(self):
         """
@@ -135,56 +135,78 @@ class Island:
                     if item.loc[0] == loc[0] and item.loc[1] == loc[1]][0]
             cell.add_animal(animals)
 
-    def commence_annual_cycle(self, year_number):
+    def commence_annual_cycle(self):
         """
-        Run the annual lifecycle of cells on the island.
+               Run the annual lifecycle of cells on the island.
 
-        .. seealso::
-                - cells.cell_annual_lifecycle()
+               .. seealso::
+                       - cells.cell_annual_lifecycle()
 
-        |
+               |
 
-        """
-        self.fitness_values_herbivores = []
-        self.fitness_values_carnivores = []
-        self.age_values_herbivores = []
-        self.age_values_carnivores = []
-        self.weight_values_herbivores = []
-        self.weight_values_carnivores = []
+               """
+        self.reset_annual_stats()
         for cell in self.cell_list:
             if not cell.allows_animal:
                 continue
-            if year_number > 1:
-                self.commence_migration(cell)
-            herbivores_fitness, carnivores_fitness, herbivores_age, \
-                carnivores_age, herbivores_weight, carnivores_weight = cell.cell_annual_lifecycle()
-            self.fitness_values_herbivores.extend(herbivores_fitness)
-            self.fitness_values_carnivores.extend(carnivores_fitness)
-            self.age_values_herbivores.extend(herbivores_age)
-            self.age_values_carnivores.extend(carnivores_age)
-            self.weight_values_herbivores.extend(herbivores_weight)
-            self.weight_values_carnivores.extend(carnivores_weight)
-            cell.reset_cell()
+            cell.animals_feed()
 
-    def commence_migration(self, cell):
-        animals_for_migration = [animal for animal in cell.herbivores + cell.carnivores if
-                                 animal.migrates]
-        if len(animals_for_migration) > 0:
-            migration_possibilities = cell.get_migration_possibilities()
-            for animal in animals_for_migration:
-                migrating_to = self.get_random_cell(migration_possibilities)
+        for cell in self.cell_list:
+            if not cell.allows_animal:
+                continue
+            cell.animals_procreate(len(cell.herbivores), len(cell.carnivores))
+
+        for cell in self.cell_list:
+            if not cell.allows_animal:
+                continue
+            self.animal_migrates(cell)
+
+        for cell in self.cell_list:
+            if not cell.allows_animal:
+                continue
+            cell.animals_age()
+
+        for cell in self.cell_list:
+            if not cell.allows_animal:
+                continue
+            cell.animals_death()
+            cell.reset_cell()
+            self.fitness_values["Herbivore"].extend([o.fitness for o in cell.herbivores])
+            self.fitness_values["Carnivore"].extend([o.fitness for o in cell.carnivores])
+            self.weight_values["Herbivore"].extend([o.weight for o in cell.herbivores])
+            self.weight_values["Carnivore"].extend([o.weight for o in cell.carnivores])
+            self.age_values["Herbivore"].extend([o.age for o in cell.herbivores])
+            self.age_values["Carnivore"].extend([o.age for o in cell.carnivores])
+
+    def reset_annual_stats(self):
+        self.fitness_values = {"Herbivore": [],
+                               "Carnivore": []}
+        self.age_values = {"Herbivore": [],
+                           "Carnivore": []}
+        self.weight_values = {"Herbivore": [],
+                              "Carnivore": []}
+
+    def animal_migrates(self, cell):
+        for animal in cell.herbivores + cell.carnivores:
+            if animal.migrated:
+                continue
+            animal.migration()
+            if animal.migrates:
+                possible_locations = cell.get_migration_possibilities()
+                migration_destination = self.get_random_cell(possible_locations)
                 migrating_cell = [cl for cl in self.cell_list
-                                  if cl.loc[0] == migrating_to[0] and
-                                  cl.loc[1] == migrating_to[1]][0]
-                if migrating_cell.allows_animal:
+                                  if cl.loc[0] == migration_destination[0] and cl.loc[1] == migration_destination[1]][0]
+                if not migrating_cell.allows_animal:
+                    continue
+                else:
+                    animal.migrated = True
                     if animal.__class__.__name__ == 'Herbivore':
                         migrating_cell.herbivores.append(animal)
-                        index = cell.herbivores.index(animal)
-                        cell.herbivores.pop(index)
-                    else:
+                        cell.herbivores.pop(cell.herbivores.index(animal))
+                    elif animal.__class__.__name__ == 'Carnivore':
                         migrating_cell.carnivores.append(animal)
-                        index = cell.carnivores.index(animal)
-                        cell.carnivores.pop(index)
+                        cell.carnivores.pop(cell.carnivores.index(animal))
+        return None
 
     @staticmethod
     def get_random_cell(possibilities):
@@ -207,22 +229,22 @@ class Island:
                                           img_years, self.map_rgb,
                                           herb_dist, carn_dist)
 
-    def update_visualization(self, year, total_years, herbivore_count, carnivores_count,
-                             cmax_animals, hist_specs, y_max):
+    def update_visualization(self, year, total_years, herbivore_count, carnivores_count, cmax_animals, hist_specs,
+                             y_max):
         herbivore_dist, carnivore_dist = self.get_distributions()
         herbivore_date = {
             "count": herbivore_count,
-            "fitness": self.fitness_values_herbivores,
-            "age": self.age_values_herbivores,
-            "weight": self.weight_values_herbivores,
+            "fitness": self.fitness_values["Herbivore"],
+            "age": self.age_values["Herbivore"],
+            "weight": self.weight_values["Herbivore"],
             "distribution": herbivore_dist
         }
 
         carnivore_date = {
             "count": carnivores_count,
-            "fitness": self.fitness_values_carnivores,
-            "age": self.age_values_carnivores,
-            "weight": self.weight_values_carnivores,
+            "fitness": self.fitness_values["Carnivore"],
+            "age": self.age_values["Carnivore"],
+            "weight": self.weight_values["Carnivore"],
             "distribution": carnivore_dist
         }
         self.graphics.update_visualization(year, total_years, cmax_animals, hist_specs, y_max,

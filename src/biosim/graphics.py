@@ -113,7 +113,7 @@ class Graphics:
                                   carnivore_data["age"], hist_specs['age'])
         self.year_txt.set_text(self.year_template.format(year))
         self.show_plots()
-        self._save_graphics(year)
+        #self._save_graphics(year)
 
     def update_number_of_species_graph(self, is_init, current_year, total_years,
                                        herbivore_count, carnivores_count, y_max):

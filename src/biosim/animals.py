@@ -44,9 +44,9 @@ class Animals:
     def __init__(self, age, weight):
         self.age = age
         self.weight = weight
-        self.fitness = 0
         self.calculate_fitness()
         self.migrates = False
+        self.migrated = False
         self.dead = False
 
     @classmethod
@@ -142,6 +142,25 @@ class Animals:
                 return baby
         return None
 
+        # newborn_weight = random.gauss(self.guideline_params['w_birth'],
+        #                               self.guideline_params['sigma_birth'])
+        # _n = cell_animal_count
+        # reduction_weight = self.guideline_params['xi'] * newborn_weight
+        # if self.weight < self.guideline_params['zeta'] * (self.guideline_params['w_birth'] +
+        #                                                 self.guideline_params['sigma_birth']) \
+        #         or _n <= 1 or self.weight < reduction_weight:
+        #     return None
+        # else:
+        #     prob = min(1, self.guideline_params['gamma'] * self.fitness * (_n - 1))
+        # if prob > random.random():
+        #     if self.__class__ == Herbivore:
+        #         island_cell.herbivores.append(Herbivore(0, newborn_weight))
+        #     elif self.__class__ == Carnivore:
+        #         island_cell.carnivores.append(Carnivore(0, newborn_weight))
+        #     self.weight -= reduction_weight
+        #     self.calculate_fitness()
+        # return None
+
     def migration(self):
         """
         Compute migration probability for the animal:
@@ -168,6 +187,7 @@ class Animals:
         """
         self.age += 1
         self.weight -= self.weight * self.guideline_params["eta"]
+        self.migrated = False
         self.calculate_fitness()
 
     def death(self):
@@ -186,14 +206,12 @@ class Animals:
         |
 
         """
-        death_prob = 0
         if self.weight <= 0:
             self.dead = True
         else:
             death_prob = self.guideline_params["omega"] * (1 - self.fitness)
-
-        if death_prob > random.random():
-            self.dead = True
+            if death_prob > random.random():
+                self.dead = True
 
 
 class Herbivore(Animals):
@@ -389,13 +407,12 @@ class Carnivore(Animals):
             The amount of food left in the cell after herbivore has eaten
 
         """
-        continue_eating_cycle = True
+        #continue_eating_cycle = True
         amount_eaten = 0
         for herbivore in herbivores:
             fitness_difference = self.fitness - herbivore.fitness
             if self.fitness <= herbivore.fitness:
-                continue_eating_cycle = False
-                break
+                eating_probability = 0
             elif 0 < fitness_difference < self.guideline_params["DeltaPhiMax"]:
                 eating_probability = fitness_difference / self.guideline_params["DeltaPhiMax"]
             else:
@@ -408,7 +425,7 @@ class Carnivore(Animals):
                 self.calculate_fitness()
                 if amount_eaten >= self.guideline_params["F"]:
                     break
-        return continue_eating_cycle
+        return None
 
 
 def set_animal_params(species, params):

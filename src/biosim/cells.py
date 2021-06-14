@@ -77,18 +77,12 @@ class Cell:
         for animal in self.herbivores:
             self.food_status = animal.feeds(self.food_status)
         # Sort animals in cell by fitness
-        self.herbivores.sort(key=lambda x: x.fitness, reverse=False)
         self.carnivores.sort(key=lambda x: x.fitness, reverse=True)
-        # Feeding
-        for animal in self.herbivores:
-            feed_left = animal.feeds(self.food_status)
-            self.food_status = feed_left
         for animal in self.carnivores:
-            continue_eating_cycle = animal.feeds(self.herbivores)
-            self.herbivores = [animal for animal in self.herbivores if not animal.dead]
             self.herbivores.sort(key=lambda x: x.fitness, reverse=False)
-            if not continue_eating_cycle:
-                break
+            animal.feeds(self.herbivores)
+            self.herbivores = [_herb for _herb in self.herbivores if not _herb.dead]
+
 
     def animals_procreate(self, number_of_herbivores, number_of_carnivores):
         index = 0
@@ -131,52 +125,35 @@ class Cell:
         """
         self.food_status = self.f_max
 
-    def cell_annual_lifecycle(self):
-        """
-        Run the annual cycle for a single cell in following order:
-            - Feeding
-            - Procreating
-            - Migration
-            - Aging
-            - Loss of weight
-            - Death
-
-        Returns
-        -------
-        list
-            Fitness values of herbivores
-        list
-            Fitness values of carnivores
-        list
-            Ages of herbivores
-        list
-            Ages of carnivores
-        list
-            Weights of herbivores
-        list
-            Weights of carnivores
-
-            |
-
-        """
-
-        # Feeding
-        self.animals_feed()
-        # Procreation
-        self.animals_procreate(len(self.herbivores), len(self.carnivores))
-        # Migration Flag,
-        self.animals_migrate()
-        # Aging and weight loss
-        self.animals_age()
-        # Death
-        self.animals_death()
-
-        return [a.fitness for a in self.herbivores], \
-               [a.fitness for a in self.carnivores], \
-               [a.age for a in self.herbivores], \
-               [a.age for a in self.carnivores], \
-               [a.weight for a in self.herbivores], \
-               [a.weight for a in self.carnivores]
+    # def cell_annual_lifecycle(self):
+    #     """
+    #     Run the annual cycle for a single cell in following order:
+    #         - Feeding
+    #         - Procreating
+    #         - Migration
+    #         - Aging
+    #         - Loss of weight
+    #         - Death
+    #
+    #     Returns
+    #     -------
+    #     list
+    #         Fitness values of herbivores
+    #     list
+    #         Fitness values of carnivores
+    #     list
+    #         Ages of herbivores
+    #     list
+    #         Ages of carnivores
+    #     list
+    #         Weights of herbivores
+    #     list
+    #         Weights of carnivores
+    #
+    #         |
+    #
+    #     """
+    #
 
     def get_migration_possibilities(self):
         """

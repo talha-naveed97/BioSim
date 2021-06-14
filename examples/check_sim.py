@@ -62,3 +62,5 @@ if __name__ == '__main__':
     sim.simulate(num_years=100)
     sim.add_population(population=ini_carns)
     sim.simulate(num_years=100)
+
+    input("Enter")
