@@ -1,6 +1,6 @@
 # BioSim
 ### NMBU, INF200 June 2021 block
-***Authors: Muntazir Naqvi & Talha Naveed, June 2021***
+***Authors: Muntazir Naqvi & Talha Naveed***
 
 BioSim is a simulation software that models and simulates the ecosystem of Rossumøya Island.
 The ecosystem consists of four different types of landscapes:
