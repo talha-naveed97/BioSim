@@ -195,7 +195,8 @@ class Island:
                 possible_locations = cell.get_migration_possibilities()
                 migration_destination = self.get_random_cell(possible_locations)
                 migrating_cell = [cl for cl in self.cell_list
-                                  if cl.loc[0] == migration_destination[0] and cl.loc[1] == migration_destination[1]][0]
+                                  if cl.loc[0] == migration_destination[0] and
+                                  cl.loc[1] == migration_destination[1]][0]
                 if not migrating_cell.allows_animal:
                     continue
                 else:
@@ -229,8 +230,8 @@ class Island:
                                           img_years, self.map_rgb,
                                           herb_dist, carn_dist)
 
-    def update_visualization(self, year, total_years, herbivore_count, carnivores_count, cmax_animals, hist_specs,
-                             y_max):
+    def update_visualization(self, year, total_years, herbivore_count, carnivores_count,
+                             cmax_animals, hist_specs, y_max):
         herbivore_dist, carnivore_dist = self.get_distributions()
         herbivore_date = {
             "count": herbivore_count,

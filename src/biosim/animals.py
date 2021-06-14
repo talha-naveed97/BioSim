@@ -407,7 +407,7 @@ class Carnivore(Animals):
             The amount of food left in the cell after herbivore has eaten
 
         """
-        #continue_eating_cycle = True
+
         amount_eaten = 0
         for herbivore in herbivores:
             fitness_difference = self.fitness - herbivore.fitness

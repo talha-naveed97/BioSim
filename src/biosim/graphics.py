@@ -106,7 +106,7 @@ class Graphics:
                                   carnivore_data["age"], hist_specs['age'])
         self.year_txt.set_text(self.year_template.format(year))
         self.show_plots()
-        # self._save_graphics(year)
+        self._save_graphics(year)
 
     def update_number_of_species_graph(self, is_init, current_year, total_years,
                                        herbivore_count, carnivores_count, y_max):
@@ -117,9 +117,11 @@ class Graphics:
             self.species_count_ax.set_xlim(0, total_years)
             self.species_count_ax.set_ylim(0, self.max_species_count)
             self.line_herbivores = self.species_count_ax.plot(np.arange(total_years),
-                                                              np.full(total_years, np.nan), 'b-', label='Herbivores')[0]
+                                                              np.full(total_years, np.nan),
+                                                              'b-', label='Herbivores')[0]
             self.line_carnivores = self.species_count_ax.plot(np.arange(total_years),
-                                                              np.full(total_years, np.nan), 'r-', label='Carnivores')[0]
+                                                              np.full(total_years, np.nan),
+                                                              'r-', label='Carnivores')[0]
             self.species_count_ax.legend()
         else:
             if total_years > len(self.line_herbivores.get_xdata()):
@@ -152,7 +154,8 @@ class Graphics:
         else:
             self.herb_dist_axis = self.herbivore_dist_ax.imshow(herbivore_map,
                                                                 interpolation='nearest',
-                                                                vmin=-0.25, vmax=cmax_animals['Herbivore'],
+                                                                vmin=-0.25,
+                                                                vmax=cmax_animals['Herbivore']
                                                                 )
             plt.colorbar(self.herb_dist_axis, ax=self.herbivore_dist_ax,
                          orientation='vertical')
@@ -162,7 +165,8 @@ class Graphics:
         else:
             self.carn_dist_axis = self.carnivore_dist_ax.imshow(carnivore_map,
                                                                 interpolation='nearest',
-                                                                vmin=-0.25, vmax=cmax_animals['Carnivore'],
+                                                                vmin=-0.25,
+                                                                vmax=cmax_animals['Carnivore']
                                                                 )
             plt.colorbar(self.carn_dist_axis, ax=self.carnivore_dist_ax,
                          orientation='vertical')

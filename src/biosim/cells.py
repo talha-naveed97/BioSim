@@ -83,7 +83,6 @@ class Cell:
             animal.feeds(self.herbivores)
             self.herbivores = [_herb for _herb in self.herbivores if not _herb.dead]
 
-
     def animals_procreate(self, number_of_herbivores, number_of_carnivores):
         index = 0
         while index < len(self.herbivores):
