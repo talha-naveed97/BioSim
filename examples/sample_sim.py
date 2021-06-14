@@ -55,10 +55,10 @@ if __name__ == '__main__':
                              'weight': {'max': 60, 'delta': 2}},
                  img_dir='results',
                  img_base='sample')
-    start = time.time()
-    sim.simulate(200)
-    stop = time.time()
-    print(stop-start)
-    #sim.make_movie()
+    # start = time.time()
+    # sim.simulate(10)
+    # stop = time.time()
+    # print(stop-start)
+    sim.make_movie()
 
     input('Press ENTER')

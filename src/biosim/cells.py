@@ -85,19 +85,22 @@ class Cell:
 
     def animals_procreate(self, number_of_herbivores, number_of_carnivores):
         index = 0
+        new_born_herbivores = []
+        new_born_carnivores = []
         while index < len(self.herbivores):
             animal = self.herbivores[index]
             baby = animal.procreation(number_of_herbivores)
             if baby is not None:
-                self.herbivores.append(baby)
+                new_born_herbivores.append(baby)
             index += 1
         index = 0
         while index < len(self.carnivores):
             animal = self.carnivores[index]
             baby = animal.procreation(number_of_carnivores)
             if baby is not None:
-                self.carnivores.append(baby)
+                new_born_carnivores.append(baby)
             index += 1
+        return  new_born_herbivores, new_born_carnivores
 
     def animals_migrate(self):
         for animal in self.herbivores + self.carnivores:

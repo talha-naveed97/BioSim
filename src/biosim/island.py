@@ -32,6 +32,7 @@ class Island:
         |
 
     """
+
     def __init__(self, geo, img_dir=None, img_name=None, img_fmt=None):
         self.geo = geo
         self.map_rgb = []
@@ -154,7 +155,10 @@ class Island:
         for cell in self.cell_list:
             if not cell.allows_animal:
                 continue
-            cell.animals_procreate(len(cell.herbivores), len(cell.carnivores))
+            new_born_herbivores, new_born_carnivores = cell.animals_procreate(len(cell.herbivores),
+                                                                              len(cell.carnivores))
+            cell.herbivores.extend(new_born_herbivores)
+            cell.carnivores.extend(new_born_carnivores)
 
         for cell in self.cell_list:
             if not cell.allows_animal:
@@ -223,9 +227,9 @@ class Island:
         total_animals = sum(len(c.herbivores) + len(c.carnivores) for c in self.cell_list)
         return total_animals
 
-    def setup_visualization(self, rows, cols, total_years, cmap, hist_specs, y_max, img_years):
+    def setup_visualization(self, total_years, cmap, hist_specs, y_max, img_years):
         herb_dist, carn_dist = self.get_distributions()
-        self.graphics.setup_visualization(rows, cols, total_years,
+        self.graphics.setup_visualization(total_years,
                                           cmap, hist_specs, y_max,
                                           img_years, self.map_rgb,
                                           herb_dist, carn_dist)
@@ -271,5 +275,5 @@ class Island:
             carnivore_dist.append(row_list_carnivore)
         return herbivore_dist, carnivore_dist
 
-    def make_movie(self):
-        self.graphics.make_movie()
+    def make_movie(self, movie_format= None):
+        self.graphics.make_movie(movie_format)
