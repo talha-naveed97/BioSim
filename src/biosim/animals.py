@@ -86,7 +86,8 @@ class Animals:
                 \\begin{cases}
                     0 & \\text{if } w \\le 0
 
-                    q^{+}(a,a_{\\frac{1}{2}},\\phi_{age}) \\times q^{-}(w,w_{\\frac{1}{2}},\\phi_{weight}) &
+                    q^{+}(a,a_{\\frac{1}{2}},\\phi_{age}) \\times
+                    q^{-}(w,w_{\\frac{1}{2}},\\phi_{weight}) &
                     \\text{else}
                 \\end{cases}
 
@@ -100,9 +101,10 @@ class Animals:
         if self.weight <= 0:
             self.fitness = 0
         else:
-            q_age = 1 / (1 + math.exp(self.guideline_params["phi_age"] * (self.age - self.guideline_params["a_half"])))
-            q_weight = 1 / (1 + math.exp(-self.guideline_params["phi_weight"] * (self.weight
-                                                                                 - self.guideline_params["w_half"])))
+            q_age = 1 / (1 + math.exp(self.guideline_params["phi_age"] *
+                                      (self.age - self.guideline_params["a_half"])))
+            q_weight = 1 / (1 + math.exp(-self.guideline_params["phi_weight"] *
+                                         (self.weight - self.guideline_params["w_half"])))
             self.fitness = q_age * q_weight
 
     def procreation(self, cell_animal_count):
@@ -124,13 +126,14 @@ class Animals:
         """
 
         birth_prob = 0
-        if cell_animal_count > 1 and self.weight >= self.guideline_params["zeta"] * (self.guideline_params["w_birth"]
-                                                                                     + self.guideline_params[
-                                                                                         "sigma_birth"]):
-            birth_prob = min(1, self.guideline_params["gamma"] * self.fitness * (cell_animal_count - 1))
+        if cell_animal_count > 1 and self.weight >= self.guideline_params["zeta"] * \
+                (self.guideline_params["w_birth"] + self.guideline_params["sigma_birth"]):
+            birth_prob = min(1, self.guideline_params["gamma"] *
+                             self.fitness * (cell_animal_count - 1))
         if birth_prob > random.random():
             baby_age = 0
-            baby_weight = random.gauss(self.guideline_params["w_birth"], self.guideline_params["sigma_birth"])
+            baby_weight = random.gauss(self.guideline_params["w_birth"],
+                                       self.guideline_params["sigma_birth"])
             mother_weight_loss = self.guideline_params["xi"] * baby_weight
             if self.weight >= mother_weight_loss:
                 baby = self.__class__(baby_age, baby_weight)
@@ -291,10 +294,10 @@ class Herbivore(Animals):
 
 class Carnivore(Animals):
     """
-    The 'Carnivore' animal type, subclass of Animals class: preys on herbivores but do not prey on each other.
-    A carnivore continues to kills herbivores until it has eaten a specific amount
-    or until it has tried to kill each herbivore present in the cell. The probability
-    *p* of carnivores killing a herbivore is given by:
+    The 'Carnivore' animal type, subclass of Animals class: preys on herbivores but
+    do not prey on each other. A carnivore continues to kills herbivores until it has
+    eaten a specific amount or until it has tried to kill each herbivore present in
+    the cell. The probability *p* of carnivores killing a herbivore is given by:
 
         .. math::
                 p =

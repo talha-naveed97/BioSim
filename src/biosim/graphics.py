@@ -15,6 +15,7 @@ _DEFAULT_GRAPHICS_NAME = 'dv'
 _DEFAULT_IMG_FORMAT = 'png'
 _DEFAULT_MOVIE_FORMAT = 'mp4'   # alternatives: mp4, gif
 
+
 class Graphics:
     def __init__(self, img_dir=None, img_name=None, img_fmt=None):
         self.plots = [{'Name': 'Geography', 'Plot': None, 'Position': 1},
@@ -55,17 +56,18 @@ class Graphics:
         self.fig.canvas.flush_events()
         plt.pause(1e-6)
 
-    def setup_visualization(self, rows, cols, total_years, cmap, hist_specs, y_max, img_years,map_rgb, herb_dist,carn_dist):
+    def setup_visualization(self, rows, cols, total_years, cmap, hist_specs, y_max,
+                            img_years, map_rgb, herb_dist, carn_dist):
         self.fig = plt.figure()
         for plot in self.plots:
             ax = self.fig.add_subplot(rows, cols, plot['Position'])
             plot['Plot'] = ax
         self.make_map(map_rgb)
         self.update_number_of_species_graph(True, 0, total_years, 0, 0, y_max)
-        self.update_distribution_map(herb_dist,carn_dist,cmap)
-        self.update_fitness_histogram([],[],hist_specs['fitness'])
-        self.update_weight_histogram([],[],hist_specs['weight'])
-        self.update_age_histogram([],[],hist_specs['age'])
+        self.update_distribution_map(herb_dist, carn_dist, cmap)
+        self.update_fitness_histogram([], [], hist_specs['fitness'])
+        self.update_weight_histogram([], [], hist_specs['weight'])
+        self.update_age_histogram([], [], hist_specs['age'])
         self.year_counter = self.fig.add_axes([0.4, 0.8, 0.2, 0.2])  # llx, lly, w, h
         self.year_counter.axis('off')  # turn off coordinate system
         self.year_txt = self.year_counter.text(0.5, 0.5, self.year_template.format(0),
@@ -97,20 +99,24 @@ class Graphics:
         ax.set_yticks(range(len(map_rgb)))
         ax.set_yticklabels(range(1, 1 + len(map_rgb)))
 
-    def update_visualization(self, year, total_years,cmax_animals, hist_specs, y_max,
+    def update_visualization(self, year, total_years, cmax_animals, hist_specs, y_max,
                              herbivore_data, carnivore_data):
         self.update_number_of_species_graph(False, year, total_years, herbivore_data["count"],
                                             carnivore_data["count"], y_max)
-        self.update_distribution_map(herbivore_data["distribution"], carnivore_data["distribution"],cmax_animals)
-        self.update_fitness_histogram(herbivore_data["fitness"],carnivore_data["fitness"],hist_specs['fitness'])
-        self.update_weight_histogram(herbivore_data["weight"],carnivore_data["weight"],hist_specs['weight'])
-        self.update_age_histogram(herbivore_data["age"],carnivore_data["age"],hist_specs['age'])
+        self.update_distribution_map(herbivore_data["distribution"],
+                                     carnivore_data["distribution"], cmax_animals)
+        self.update_fitness_histogram(herbivore_data["fitness"],
+                                      carnivore_data["fitness"], hist_specs['fitness'])
+        self.update_weight_histogram(herbivore_data["weight"],
+                                     carnivore_data["weight"], hist_specs['weight'])
+        self.update_age_histogram(herbivore_data["age"],
+                                  carnivore_data["age"], hist_specs['age'])
         self.year_txt.set_text(self.year_template.format(year))
         self.show_plots()
         self._save_graphics(year)
 
-    def update_number_of_species_graph(self, is_init, current_year, total_years, herbivore_count, carnivores_count,
-                                       y_max):
+    def update_number_of_species_graph(self, is_init, current_year, total_years,
+                                       herbivore_count, carnivores_count, y_max):
         ax = [pt['Plot'] for pt in self.plots if pt['Name'] == 'Number_of_species'][0]
         max_count = max(herbivore_count, carnivores_count)
         if y_max is not None:
@@ -147,7 +153,7 @@ class Graphics:
         self.line_herbivores.set_ydata(y_data_herbivore)
         self.line_carnivores.set_ydata(y_data_carnivore)
 
-    def update_distribution_map(self,herbivore_map, carnivore_map,cmax_animals):
+    def update_distribution_map(self, herbivore_map, carnivore_map, cmax_animals):
         if self.herb_dist_axis is not None:
             self.herb_dist_axis.set_data(herbivore_map)
         else:
@@ -170,7 +176,8 @@ class Graphics:
             plt.colorbar(self.carn_dist_axis, ax=ax_carn,
                          orientation='vertical')
 
-    def update_fitness_histogram(self,fitness_values_herbivores, fitness_values_carnivores ,fitness_hist_specs):
+    def update_fitness_histogram(self, fitness_values_herbivores,
+                                 fitness_values_carnivores, fitness_hist_specs):
         ax = [pt['Plot'] for pt in self.plots if pt['Name'] == 'Fitness_Histogram'][0]
         ax.clear()
         ax.set_title('Fitness histogram',
@@ -181,7 +188,7 @@ class Graphics:
                 label=('Herbivores', 'Carnivores'), color=('b', 'r'))
         ax.legend()
 
-    def update_age_histogram(self,age_values_herbivores, age_values_carnivores , age_hist_specs):
+    def update_age_histogram(self, age_values_herbivores, age_values_carnivores, age_hist_specs):
         ax = [pt['Plot'] for pt in self.plots if pt['Name'] == 'Age_Histogram'][0]
         ax.clear()
         ax.set_title('Age histogram',
@@ -192,7 +199,8 @@ class Graphics:
                 label=('Herbivores', 'Carnivores'), color=('b', 'r'))
         ax.legend()
 
-    def update_weight_histogram(self,weight_values_herbivores, weight_values_carnivores, weight_hist_specs):
+    def update_weight_histogram(self, weight_values_herbivores,
+                                weight_values_carnivores, weight_hist_specs):
         ax = [pt['Plot'] for pt in self.plots if pt['Name'] == 'Weight_Histogram'][0]
         ax.clear()
         ax.set_title('Weight histogram',

@@ -131,7 +131,8 @@ class Island:
         for record in species:
             loc = record['loc']
             animals = record['pop']
-            cell = [item for item in self.cell_list if item.loc[0] == loc[0] and item.loc[1] == loc[1]][0]
+            cell = [item for item in self.cell_list
+                    if item.loc[0] == loc[0] and item.loc[1] == loc[1]][0]
             cell.add_animal(animals)
 
     def commence_annual_cycle(self, year_number):
@@ -173,7 +174,8 @@ class Island:
             for animal in animals_for_migration:
                 migrating_to = self.get_random_cell(migration_possibilities)
                 migrating_cell = [cl for cl in self.cell_list
-                                  if cl.loc[0] == migrating_to[0] and cl.loc[1] == migrating_to[1]][0]
+                                  if cl.loc[0] == migrating_to[0] and
+                                  cl.loc[1] == migrating_to[1]][0]
                 if migrating_cell.allows_animal:
                     if animal.__class__.__name__ == 'Herbivore':
                         migrating_cell.herbivores.append(animal)
@@ -200,7 +202,9 @@ class Island:
 
     def setup_visualization(self, rows, cols, total_years, cmap, hist_specs, y_max, img_years):
         herb_dist, carn_dist = self.get_distributions()
-        self.graphics.setup_visualization(rows, cols, total_years, cmap, hist_specs, y_max, img_years, self.map_rgb,
+        self.graphics.setup_visualization(rows, cols, total_years,
+                                          cmap, hist_specs, y_max,
+                                          img_years, self.map_rgb,
                                           herb_dist, carn_dist)
 
     def update_visualization(self, year, total_years, herbivore_count, carnivores_count,
@@ -236,7 +240,8 @@ class Island:
             chars = len(line)
             for y in range(chars):
                 loc = (x + 1, y + 1)
-                cell = [item for item in self.cell_list if item.loc[0] == loc[0] and item.loc[1] == loc[1]][0]
+                cell = [item for item in self.cell_list
+                        if item.loc[0] == loc[0] and item.loc[1] == loc[1]][0]
                 row_list_herbivore.append(len(cell.herbivores))
                 row_list_carnivore.append(len(cell.carnivores))
             herbivore_dist.append(row_list_herbivore)

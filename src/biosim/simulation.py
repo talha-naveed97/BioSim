@@ -55,7 +55,7 @@ class BioSim:
         else:
             self.hist_specs = hist_specs
 
-        self.island = Island(island_map, img_dir=img_dir, img_name= img_base, img_fmt=img_fmt)
+        self.island = Island(island_map, img_dir=img_dir, img_name=img_base, img_fmt=img_fmt)
 
         if ini_pop is not None:
             self.add_population(ini_pop)
@@ -110,9 +110,10 @@ class BioSim:
             self.island.commence_annual_cycle(self.current_year)
             counts = self.num_animals_per_species
             if self.vis_years > 0 and self.current_year % self.vis_years == 0:
-                self.island.update_visualization(self.current_year, self.num_years, counts['Herbivore'],
-                                                 counts['Carnivore'],
-                                                 self.c_max_animal, self.hist_specs, self.y_max_animals)
+                self.island.update_visualization(self.current_year, self.num_years,
+                                                 counts['Herbivore'], counts['Carnivore'],
+                                                 self.c_max_animal, self.hist_specs,
+                                                 self.y_max_animals)
 
     def add_population(self, population):
         """
