@@ -6,6 +6,7 @@ Test set for Animals class for INF200 June 2021.
 
 from biosim import animals
 from biosim.animals import Herbivore, Carnivore
+from biosim.cells import Lowland
 import math
 import pytest
 
@@ -83,3 +84,19 @@ def test_set_animal_params():
     params = {'age': 10, 'weight': 20}
     with pytest.raises(ValueError):
         animals.set_animal_params(species, params)
+
+
+def test_herbivore_feeds():
+    """
+    Test that herbivore feeds properly.
+    """
+    animal = Herbivore(6, 12)
+    cell = Lowland((6, 6))
+    f = animal.guideline_params["F"]
+    if f > cell.food_status:
+        f = cell.food_status
+    animal.weight += f * animal.guideline_params["beta"]
+    animal.calculate_fitness()
+    feed_left_test = cell.food_status - f
+    feed_left = animal.feeds(cell.food_status)
+    assert feed_left_test == feed_left
