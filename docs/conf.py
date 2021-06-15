@@ -18,7 +18,7 @@ autoclass_content = 'both'
 # -- Project information -----------------------------------------------------
 
 project = 'BioSim'
-copyright = '2021, Muntazir Naqvi & Talha Naveed'
+copyright = '2021, Muntazir Naqvi & Talha Naveed / NMBU'
 author = 'Muntazir Naqvi & Talha Naveed'
 
 
