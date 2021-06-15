@@ -26,8 +26,31 @@ class Island:
         Path to the directory where images from the simulation are saved.
     img_name : str
         Filenames of images.
-    img_fmt :
+    img_fmt : str
         File format of the image.
+
+        |
+
+    Attributes
+    ----------
+    fitness_values
+        *dict*: Dictionary with keys 'Herbivore' and 'Carnivore' indicating type of animal.
+        Each key corresponds to a list of fitness values for every animal on the island
+        that belongs to that type.
+
+        |
+
+    age_values
+        *dict*: Dictionary with keys 'Herbivore' and 'Carnivore' indicating type of animal.
+        Each key corresponds to a list of age values for every animal on the island
+        that belongs to that type.
+
+        |
+
+    weight_values
+        *dict*: Dictionary with keys 'Herbivore' and 'Carnivore' indicating type of animal.
+        Each key corresponds to a list of weight values for every animal on the island
+        that belongs to that type.
 
         |
 
@@ -97,7 +120,7 @@ class Island:
 
 
         .. seealso::
-                - cells.set_cell_params()
+                - biosim.cells.set_cell_params()
 
 
         |
@@ -111,8 +134,8 @@ class Island:
         Update default characteristics of animals.
 
         .. seealso::
-                - cells.update_animal_params(species, params)
-                - animals.set_animal_params(species, params)
+                - biosim.cells.update_animal_params(species, params)
+                - biosim.animals.set_animal_params(species, params)
 
         |
 
@@ -124,7 +147,7 @@ class Island:
         Add population (herbivores and carnivores) to the cells on the island.
 
         .. seealso::
-                - cells.add_animal(animals)
+                - biosim.cells.add_animal(animals)
 
         |
 
@@ -138,14 +161,23 @@ class Island:
 
     def commence_annual_cycle(self):
         """
-               Run the annual lifecycle of cells on the island.
+        Run the annual cycle for a single cell in following order:
+            - Feeding
+            - Procreating
+            - Migration
+            - Aging
+            - Death
 
                .. seealso::
-                       - cells.cell_annual_lifecycle()
+                       - biosim.cells.animals_feed()
+                       - biosim.cells.animals_procreate()
+                       - Island.animal_migrates()
+                       - biosim.cells.animals_age()
+                       - biosim.cells.animals_death()
 
-               |
+        |
 
-               """
+        """
         self.reset_annual_stats()
         for cell in self.cell_list:
             if not cell.allows_animal:
@@ -155,10 +187,10 @@ class Island:
         for cell in self.cell_list:
             if not cell.allows_animal:
                 continue
-            new_born_herbivores, new_born_carnivores = cell.animals_procreate(len(cell.herbivores),
-                                                                              len(cell.carnivores))
-            cell.herbivores.extend(new_born_herbivores)
-            cell.carnivores.extend(new_born_carnivores)
+            newborn_herbivores, newborn_carnivores = cell.animals_procreate(len(cell.herbivores),
+                                                                            len(cell.carnivores))
+            cell.herbivores.extend(newborn_herbivores)
+            cell.carnivores.extend(newborn_carnivores)
 
         for cell in self.cell_list:
             if not cell.allows_animal:
@@ -183,6 +215,12 @@ class Island:
             self.age_values["Carnivore"].extend([o.age for o in cell.carnivores])
 
     def reset_annual_stats(self):
+        """
+        Reset Island attributes to intial values.
+
+        |
+
+        """
         self.fitness_values = {"Herbivore": [],
                                "Carnivore": []}
         self.age_values = {"Herbivore": [],
@@ -191,11 +229,21 @@ class Island:
                               "Carnivore": []}
 
     def animal_migrates(self, cell):
+        """
+        Migration of animals that can migrate to cells that allow animals to enter.
+
+               .. seealso::
+                       - biosim.cells.get_migration_possibilities()
+                       - biosim.animals.Animals.migration()
+
+        |
+
+        """
         for animal in cell.herbivores + cell.carnivores:
-            if animal.migrated:
+            if animal.has_migrated:
                 continue
             animal.migration()
-            if animal.migrates:
+            if animal.can_migrate:
                 possible_locations = cell.get_migration_possibilities()
                 migration_destination = self.get_random_cell(possible_locations)
                 migrating_cell = [cl for cl in self.cell_list
@@ -204,7 +252,7 @@ class Island:
                 if not migrating_cell.allows_animal:
                     continue
                 else:
-                    animal.migrated = True
+                    animal.has_migrated = True
                     if animal.__class__.__name__ == 'Herbivore':
                         migrating_cell.herbivores.append(animal)
                         cell.herbivores.pop(cell.herbivores.index(animal))
@@ -219,11 +267,23 @@ class Island:
         return possibilities[_dir]
 
     def get_total_species_count(self):
+        """
+        Returns a dictionary with counts of herbivores and carnivores on the island.
+
+        |
+
+        """
         total_herbivores = sum(len(c.herbivores) for c in self.cell_list)
         total_carnivores = sum(len(c.carnivores) for c in self.cell_list)
         return {'Herbivore': total_herbivores, 'Carnivore': total_carnivores}
 
     def get_total_animal_count(self):
+        """
+        Returns the total number of animals on the island.
+
+        |
+
+        """
         total_animals = sum(len(c.herbivores) + len(c.carnivores) for c in self.cell_list)
         return total_animals
 
@@ -275,5 +335,5 @@ class Island:
             carnivore_dist.append(row_list_carnivore)
         return herbivore_dist, carnivore_dist
 
-    def make_movie(self, movie_format= None):
+    def make_movie(self, movie_format=None):
         self.graphics.make_movie(movie_format)

@@ -3,8 +3,7 @@
 """
 This module implements the Animals class to simulate the animals found on Rossumøya island.
 The two subclasses, Herbivore and Carnivore represent the two types of animals and define
-their respective characteristics, including parameters and functional differences such as the
-way each type of animal feeds.
+their respective characteristics and functions such as the way each type of animal feeds.
 """
 
 import math
@@ -15,27 +14,36 @@ class Animals:
     """
     The Animals class.
 
-    Parameters
+    Attributes
     __________
+    age
+        *int*: Age of the animal.
 
-    age : int
-        Age of the animal.
+        |
 
-    weight: float
-        Weight of the animal.
+    weight
+        *float*: Weight of the animal.
 
-    dead : bool
-        *True* if the animal dies, *False* otherwise.
+        |
 
-    fitness : float
-        Fitness of the animal.
+    dead
+        *bool*: *True* if the animal dies, *False* otherwise.
 
-    migrates : bool
-        *True* leads to animal migrating to another cell, *False* keeps the animal in the same
-        cell during annual cycle.
+        |
 
-    gives_birth : bool
-        Animal will likely give birth if *True*.
+    fitness
+        *float*: Fitness of the animal.
+
+        |
+
+    can_migrate
+        *bool*: *True* if animal is likely to migrate to another cell, *False* otherwise.
+
+        |
+
+    has_migrated
+        *bool*: *True* if animal has migrated to another cell, *False* otherwise.
+        Cannot be *True* if **can_migrate** is *False*.
 
         |
 
@@ -45,27 +53,28 @@ class Animals:
         self.age = age
         self.weight = weight
         self.calculate_fitness()
-        self.migrates = False
-        self.migrated = False
+        self.can_migrate = False
+        self.has_migrated = False
         self.dead = False
 
     @classmethod
     def update_defaults(cls, params):
         """
-               Update default characteristics of animals.
+        Update default characteristics of animals.
 
-               Parameters
-               ----------
-               params : dict
-                   Dictionary of *guideline_params* for each type of animal.
+        Parameters
+        ----------
+        params : dict
+            Dictionary of *guideline_params* for each type of animal.
 
-                   .. seealso::
-                       - cells.Herbivore()
-                       - cells.Carnivore()
+            .. seealso::
+                - animals.Herbivore()
+                - animals.Carnivore()
 
-                   |
+            |
 
-               """
+        """
+
         key_diff = params.keys() - cls.guideline_params.keys()
         if len(key_diff) != 0:
             raise ValueError('The following keys are invalid: ', key_diff)
@@ -80,7 +89,7 @@ class Animals:
 
     def calculate_fitness(self):
         """
-        Calculate fitness of an animal (between 0 and 1) using the equation:
+        Calculate fitness (between 0 and 1) of an animal using the equation:
             .. math::
                 \\Phi =
                 \\begin{cases}
@@ -109,19 +118,19 @@ class Animals:
 
     def procreation(self, cell_animal_count):
         """
-               Compute the probability for an animal giving birth:
-                   .. math::
-                       \\text{min}(1, \\gamma \\times \\Phi \\times (N-1))
+        Compute the probability for an animal giving birth:
+            .. math::
+                \\text{min}(1, \\gamma \\times \\Phi \\times (N-1))
 
-               and set ``gives_birth`` as *True* if probability is higher than a random threshold.
+        and returns **baby**: a newborn animal in the similar class or None if no procreation.
 
-               Parameters
-               ----------
-               cell_animal_count : int
-                   Number of animals of a in a cell. Probability of giving birth is only calculated
-                   if there are at least two animals of the same species present in a cell.
+        Parameters
+        ----------
+        cell_animal_count : int
+            Number of animals of a species in a cell. Probability of giving birth is only
+            calculated if there are at least two animals of the same species present in a cell.
 
-                   |
+            |
 
         """
 
@@ -142,58 +151,40 @@ class Animals:
                 return baby
         return None
 
-        # newborn_weight = random.gauss(self.guideline_params['w_birth'],
-        #                               self.guideline_params['sigma_birth'])
-        # _n = cell_animal_count
-        # reduction_weight = self.guideline_params['xi'] * newborn_weight
-        # if self.weight < self.guideline_params['zeta'] * (self.guideline_params['w_birth'] +
-        #                                                 self.guideline_params['sigma_birth']) \
-        #         or _n <= 1 or self.weight < reduction_weight:
-        #     return None
-        # else:
-        #     prob = min(1, self.guideline_params['gamma'] * self.fitness * (_n - 1))
-        # if prob > random.random():
-        #     if self.__class__ == Herbivore:
-        #         island_cell.herbivores.append(Herbivore(0, newborn_weight))
-        #     elif self.__class__ == Carnivore:
-        #         island_cell.carnivores.append(Carnivore(0, newborn_weight))
-        #     self.weight -= reduction_weight
-        #     self.calculate_fitness()
-        # return None
-
     def migration(self):
         """
         Compute migration probability for the animal:
             .. math::
                 \\mu \\Phi
 
-               and set ``migrates`` as *True* if probability is higher than a random threshold.
+        and set **can_migrate** as *True* if probability is higher than a random threshold.
 
-            |
+        |
 
         """
         migration_prob = self.guideline_params["mu"] * self.fitness
         if migration_prob > random.random():
-            self.migrates = True
+            self.can_migrate = True
         else:
-            self.migrates = False
+            self.can_migrate = False
 
     def commence_aging(self):
         """
-        Increases animal age by 1 and recomputes animal weight and fitness.
+        Increase animal age by 1 year and recompute animal weight and fitness.
 
         |
 
         """
         self.age += 1
         self.weight -= self.weight * self.guideline_params["eta"]
-        self.migrated = False
+        self.has_migrated = False
         self.calculate_fitness()
 
     def death(self):
         """
         Compute probability of the animal dying and set ``dead`` as *True*
-        if probability is higher than a random threshold. This probability is given by:
+        if probability is higher than a random threshold. The probability is
+        computed as:
 
             .. math::
                 p_{death} =
@@ -216,15 +207,15 @@ class Animals:
 
 class Herbivore(Animals):
     """
-    The 'Herbivore' animal type, subclass of Animals class: feeds on fodder in lowland and highland.
-    Herbivores eat in random order the amount *F* from the available fodder
-    and its weight increases by:
+    The 'Herbivore' animal type, subclass of *Animals* class: feeds on fodder in
+    lowland and highland. Herbivores eat in random order the amount *F* from the
+    fodder available in the cell. Subsequently, its weight increases by:
 
     .. math::
         \\Delta w_{herb} = \\beta F
 
 
-    .. list-table:: Default characteristics of Herbivores
+    .. list-table:: Default characteristics *guideline_params* of Herbivores
             :widths: 25 25
             :header-rows: 1
 
@@ -290,15 +281,15 @@ class Herbivore(Animals):
         """
         Feeding function for herbivores.
 
+        Returns **feed_left**: the amount of food left in the cell after herbivore has eaten.
+
         Parameters
         ----------
         cell_food_amount : float
             The amount of food available in the cell.
 
-        Returns
-        -------
-        feed_left : float
-            The amount of food left in the cell after herbivore has eaten
+
+        |
 
         """
         f = self.guideline_params["F"]
@@ -312,7 +303,7 @@ class Herbivore(Animals):
 
 class Carnivore(Animals):
     """
-    The 'Carnivore' animal type, subclass of Animals class: preys on herbivores but
+    The 'Carnivore' animal type, subclass of *Animals* class: preys on herbivores but
     do not prey on each other. A carnivore continues to kills herbivores until it has
     eaten a specific amount or until it has tried to kill each herbivore present in
     the cell. The probability *p* of carnivores killing a herbivore is given by:
@@ -399,12 +390,10 @@ class Carnivore(Animals):
         Parameters
         ----------
         herbivores : list
-            The list of herbivores present in the cell.
+            The list of herbivores present in the cell. The attribute **dead** is set *True*
+            for each herbivores that is killed by the carnivore.
 
-        Returns
-        -------
-        feed_left : float
-            The amount of food left in the cell after herbivore has eaten
+            |
 
         """
 
@@ -429,6 +418,22 @@ class Carnivore(Animals):
 
 
 def set_animal_params(species, params):
+    """
+
+    Parameters
+    ----------
+    species : str
+        Class of animal, *'Herbivore'* or *'Carnovire'*
+
+    params : dict
+        Dictionary of *guideline_params* for each type of animal.
+
+        .. seealso::
+            - Animals.update_defaults()
+
+        |
+
+    """
     if species == 'Herbivore':
         Herbivore.update_defaults(params)
     elif species == 'Carnivore':

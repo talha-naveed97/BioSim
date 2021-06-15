@@ -15,7 +15,6 @@ def test_update_params():
     """
     Test that parameters of animals are updated correctly.
     """
-
     custom_value = 7.5
     animal = Herbivore(10, 20)
     params = {'zeta': custom_value}
@@ -27,7 +26,6 @@ def test_calculate_fitness():
     """
     Test that animal fitness is computed correctly.
     """
-
     age = 10
     weight = 20
     animal = Herbivore(10, 20)
@@ -44,14 +42,13 @@ def test_migration(mocker):
     """
     Test that animal is able to migrate if probability is above a certain threshold.
     """
-
     animal = Carnivore(10, 20)
     animal.calculate_fitness()
     migration_prob = animal.guideline_params["mu"] * animal.fitness
     val = migration_prob - 0.01
     mocker.patch('random.random', return_value=val)
     animal.migration()
-    assert animal.migrates is True
+    assert animal.can_migrate is True
 
 
 def test_aging():
@@ -88,7 +85,7 @@ def test_set_animal_params():
 
 def test_herbivore_feeds():
     """
-    Test that herbivore feeds properly.
+    Test that herbivores feed properly.
     """
     animal = Herbivore(6, 12)
     cell = Lowland((6, 6))
@@ -103,6 +100,9 @@ def test_herbivore_feeds():
 
 
 def test_carnivore_feeds(mocker):
+    """
+    Test that carnivores feed properly.
+    """
     set_animal_params('Carnivore', {'F': 20})
     herbivores = [Herbivore(1, 10) for _ in range(2)]
     carn = Carnivore(10, 10)
@@ -112,6 +112,9 @@ def test_carnivore_feeds(mocker):
 
 
 def test_carnivore_weight_change(mocker):
+    """
+    Test that carnivore weight changes correctly after feeding.
+    """
     set_animal_params('Carnivore', {'F': 20})
     herbivores = [Herbivore(1, 10) for _ in range(2)]
     carn = Carnivore(10, 10)

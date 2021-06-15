@@ -72,7 +72,6 @@ class Graphics:
         self.fig = plt.figure(constrained_layout=True)
         self._gs = gridspec.GridSpec(ncols=4, nrows=3, figure=self.fig)
         self.geography_ax = self.fig.add_subplot(self._gs[0:2, 1:3])
-        # self.geography_ax = self.fig.add_subplot(self._gs[0,1])
         self.species_count_ax = self.fig.add_subplot(self._gs[0, 0])
         self.herbivore_dist_ax = self.fig.add_subplot(self._gs[1, 0])
         self.carnivore_dist_ax = self.fig.add_subplot(self._gs[2, 0])
@@ -96,7 +95,7 @@ class Graphics:
         self.year_txt = self.year_counter.text(0.5, 0.5, self.year_template.format(0),
                                                horizontalalignment='center',
                                                verticalalignment='center',
-                                               transform=self.year_counter.transAxes, fontsize=10)
+                                               transform=self.year_counter.transAxes, fontsize=14)
         self.plt_fig_title_txt = self.plt_fig_title.text(0.5, 0.5, self.year_template.format(0),
                                                          horizontalalignment='center',
                                                          verticalalignment='center',
@@ -123,8 +122,6 @@ class Graphics:
         self.fig.canvas.mpl_connect('button_press_event', self.on_press)
 
     def make_map(self, map_rgb):
-        # plt.ion()
-        self.geography_ax.set_gid('ILD')
         self.geography_ax.imshow(map_rgb)
         update_plot_tick_labels(self.geography_ax, map_rgb)
         self.geography_ax.set_title("Island", fontweight='bold')
@@ -313,7 +310,7 @@ class Graphics:
                 subprocess.check_call([_MAGICK_BINARY,
                                        '-delay', '1',
                                        '-loop', '0',
-                                       '{}_%05d.png'.format(self._img_base),
+                                       '{}_*.png'.format(self._img_base),
                                        '{}.{}'.format(self._img_base, movie_fmt)])
             except subprocess.CalledProcessError as err:
                 raise RuntimeError('ERROR: convert failed with: {}'.format(err))
