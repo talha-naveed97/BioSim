@@ -45,7 +45,14 @@ class Cell:
         params : dict
             Dictionary {'f_max': *value*} that sets the new default value of fodder in a cell.
 
-            |
+
+        .. code-block:: python
+
+            params = {'f_max': 500}
+            Lowland.update_defaults(params)
+
+
+        |
 
         """
         cls.f_max = params["f_max"]
@@ -60,7 +67,16 @@ class Cell:
         animals : list
             list of dictionaries that specify the species, age, and weight of each animal.
 
-            |
+        .. code-block:: python
+
+            lowland = Lowland(10,10)
+            herb = [{'species': 'Herbivore', 'age': 1, 'weight': 10} for _ in range(5)]
+            carn = [{'species': 'Carnivore', 'age': 2, 'weight': 5} for _ in range(7)]
+            lowland.add_animal(herb)
+            lowland.add_animal(carn)
+
+
+        |
 
         """
         for x in animals:
@@ -81,7 +97,17 @@ class Cell:
                 - biosim.animals.Herbivore.feeds()
                 - biosim.animals.Carnivore.feeds()
 
-            |
+
+        .. code-block:: python
+
+            lowland = Lowland(10,10)
+            herb = [{'species': 'Herbivore', 'age': 1, 'weight': 10} for _ in range(5)]
+            carn = [{'species': 'Carnivore', 'age': 2, 'weight': 5} for _ in range(7)]
+            lowland.add_animal(herb)
+            lowland.add_animal(carn)
+            lowland.animals_feed()
+
+        |
 
         """
         for animal in self.herbivores:
@@ -100,7 +126,17 @@ class Cell:
             .. seealso::
                 - biosim.animals.Animals.procreation()
 
-            |
+        .. code-block:: python
+
+            lowland = Lowland(10,10)
+            herb = [{'species': 'Herbivore', 'age': 1, 'weight': 10} for _ in range(5)]
+            carn = [{'species': 'Carnivore', 'age': 2, 'weight': 5} for _ in range(7)]
+            lowland.add_animal(herb)
+            lowland.add_animal(carn)
+            lowland.animals_procreate()
+
+
+        |
 
         """
         index = 0
@@ -128,7 +164,18 @@ class Cell:
             .. seealso::
                 - biosim.animals.Animals.migration()
 
-            |
+
+        .. code-block:: python
+
+            lowland = Lowland(10,10)
+            herb = [{'species': 'Herbivore', 'age': 1, 'weight': 10} for _ in range(5)]
+            carn = [{'species': 'Carnivore', 'age': 2, 'weight': 5} for _ in range(7)]
+            lowland.add_animal(herb)
+            lowland.add_animal(carn)
+            lowland.animals_migrate()
+
+
+        |
 
         """
         for animal in self.herbivores + self.carnivores:
@@ -141,7 +188,18 @@ class Cell:
             .. seealso::
                 - biosim.animals.Animals.commence_aging()
 
-            |
+
+        .. code-block:: python
+
+            lowland = Lowland(10,10)
+            herb = [{'species': 'Herbivore', 'age': 1, 'weight': 10} for _ in range(5)]
+            carn = [{'species': 'Carnivore', 'age': 2, 'weight': 5} for _ in range(7)]
+            lowland.add_animal(herb)
+            lowland.add_animal(carn)
+            lowland.animals_age()
+
+
+        |
 
         """
         for animal in self.herbivores + self.carnivores:
@@ -154,7 +212,18 @@ class Cell:
             .. seealso::
                 - biosim.animals.Animals.death()
 
-            |
+
+        .. code-block:: python
+
+            lowland = Lowland(10,10)
+            herb = [{'species': 'Herbivore', 'age': 1, 'weight': 10} for _ in range(5)]
+            carn = [{'species': 'Carnivore', 'age': 2, 'weight': 5} for _ in range(7)]
+            lowland.add_animal(herb)
+            lowland.add_animal(carn)
+            lowland.animals_death()
+
+
+        |
 
         """
         for animal in self.herbivores + self.carnivores:
@@ -167,6 +236,13 @@ class Cell:
         """
 
         Reset the amount of fodder available in cells to their *f_max*.
+
+
+        .. code-block:: python
+
+            lowland = Lowland(10,10)
+            lowland.reset_cell()
+
 
         |
 
@@ -184,6 +260,13 @@ class Cell:
 
         Figure 2: Cells where animals can migrate, no diagonal movement.
 
+
+        .. code-block:: python
+
+            cell = Lowland(10,10)
+            cell.reset_cell()
+
+
         |
 
         """
@@ -195,6 +278,12 @@ class Water(Cell):
     """
 
     'Water' cell type: does not allow animals to enter and has no fodder.
+
+
+     .. code-block:: python
+
+            water = Water(10,10)
+
 
     |
 
@@ -209,6 +298,11 @@ class Lowland(Cell):
 
     'Lowland' cell type: allows animals to enter and has fodder.
 
+     .. code-block:: python
+
+        lowland = Lowland(10,10)
+
+
     |
 
     """
@@ -222,6 +316,12 @@ class Highland(Cell):
 
     'Highland' cell type: allows animals to enter and has less fodder than Lowland.
 
+
+    .. code-block:: python
+
+        highland = Highland(10,10)
+
+
     |
 
     """
@@ -234,6 +334,12 @@ class Desert(Cell):
     """
 
     'Desert' cell type: allows animals to enter, but has no fodder.
+
+
+    .. code-block:: python
+
+        desert = Desert(10,10)
+
 
     |
 
@@ -260,7 +366,13 @@ def set_cell_params(land_type, params):
         .. seealso::
             - Cell.update_defaults()
 
-        |
+
+    .. code-block:: python
+
+        set_cell_params('D', {'f_max': 10.})
+
+
+    |
 
     """
 
@@ -295,7 +407,7 @@ def update_animal_params(species, params):
         .. seealso::
             - biosim.animals.set_animal_params()
 
-        |
+    |
 
     """
     set_animal_params(species, params)
