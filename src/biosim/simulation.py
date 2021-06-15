@@ -166,6 +166,9 @@ class BioSim:
             if self.current_year == 0:
                 self.island.setup_visualization(self.num_years, self.c_max_animal,
                                                 self.hist_specs, self.y_max_animals, self.img_years)
+
+        herbivore_count = []
+        carnivore_count = []
         for x in range(self.current_year, self.num_years):
             self.current_year = x + 1
             self.island.commence_annual_cycle()
@@ -175,6 +178,11 @@ class BioSim:
                                                  counts['Herbivore'], counts['Carnivore'],
                                                  self.c_max_animal, self.hist_specs,
                                                  self.y_max_animals)
+
+            herbivore_count.append(counts['Herbivore'])
+            carnivore_count.append(counts['Carnivore'])
+
+        return herbivore_count, carnivore_count
 
     def add_population(self, population):
         """
