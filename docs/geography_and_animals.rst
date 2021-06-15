@@ -1,9 +1,9 @@
-Geography and Animals
+Animals and Geogrpahy
 =====================
 
-The island module
+The animals module
 ------------------
-.. automodule:: biosim.island
+.. automodule:: biosim.animals
    :members:
 
 The cells module
@@ -11,7 +11,11 @@ The cells module
 .. automodule:: biosim.cells
    :members:
 
-The animals module
+The island module
 ------------------
-.. automodule:: biosim.animals
+.. automodule:: biosim.island
    :members:
+
+
+
+
