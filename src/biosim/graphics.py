@@ -38,10 +38,14 @@ class Graphics:
         self.year_counter = None
         self.plt_fig_title = None
         self.plt_fig_title_txt = None
+        self.selected_cell_ax = None
+        self.selected_cell_ax_txt = None
+        self.plt_fig_title_txt = None
         self.year_txt = None
         self._map_legend_ax = None
         self.year_template = 'Year: {:5d}'
         self._gs = None
+        self.cell_list = []
         self.img_dir = img_dir
 
         if self.img_dir is None:
@@ -74,9 +78,11 @@ class Graphics:
         self.fitness_hist_ax = self.fig.add_subplot(self._gs[0, 3])
         self.age_hist_ax = self.fig.add_subplot(self._gs[1, 3])
         self.weight_hist_ax = self.fig.add_subplot(self._gs[2, 3])
-        self._map_legend_ax = self.fig.add_axes([0.36, 0.25, 0.43, 0.4])
+        self._map_legend_ax = self.fig.add_axes([0.36, 0.22, 0.43, 0.2])
         self._map_legend_ax.axis('off')
-        self.year_counter = self.fig.add_axes([0.4, 0.08, 0.3, 0.2])  # llx, lly, w, h
+        self.selected_cell_ax = self.fig.add_axes([0.33, 0.28, 0.43, 0.1])
+        self.selected_cell_ax.axis('off')
+        self.year_counter = self.fig.add_axes([0.4, 0.05, 0.3, 0.2])  # llx, lly, w, h
         self.year_counter.axis('off')  # turn off coordinate system
         self.plt_fig_title = self.fig.add_axes([0.3, 0., 0.5, 0.2])  # llx, lly, w, h
         self.plt_fig_title.axis('off')  # turn off coordinate system
@@ -93,16 +99,27 @@ class Graphics:
         self.plt_fig_title_txt = self.plt_fig_title.text(0.5, 0.5, self.year_template.format(0),
                                                          horizontalalignment='center',
                                                          verticalalignment='center',
-                                                         transform=self.plt_fig_title.transAxes,
-                                                         fontsize=14,
+                                                         transform=self.plt_fig_title.transAxes, fontsize=14,
                                                          fontweight='bold')
         self.plt_fig_title_txt.set_text("Population Dynamics Simulation")
+
+        self.selected_cell_ax_txt = self.selected_cell_ax.text(0.5, 0.5, self.year_template.format(0),
+                                                               horizontalalignment='center',
+                                                               verticalalignment='center',
+                                                               transform=self.selected_cell_ax.transAxes, fontsize=8,
+                                                               )
+        self.selected_cell_ax_txt.set_text("")
+        # self.select_text.set_text("Population Dynamics Simulation")
+        # manager = plt.get_current_fig_manager()
+        # manager.window.showMaximized()
+        self.fig.canvas.manager.full_screen_toggle()
 
         self.img_years = img_years
         if not os.path.exists(self.img_dir):
             os.mkdir(self.img_dir)
 
         self.show_plots()
+        self.fig.canvas.mpl_connect('button_press_event', self.on_press)
 
     def make_map(self, map_rgb):
         self.geography_ax.imshow(map_rgb)
@@ -120,7 +137,8 @@ class Graphics:
             self._map_legend_ax.text(i * 0.25, 0.2, name, transform=self._map_legend_ax.transAxes)
 
     def update_visualization(self, year, total_years, cmax_animals, hist_specs, y_max,
-                             herbivore_data, carnivore_data):
+                             herbivore_data, carnivore_data, cell_list):
+        self.cell_list = cell_list
         self.update_number_of_species_graph(False, year, total_years, herbivore_data["count"],
                                             carnivore_data["count"], y_max)
         self.update_distribution_map(herbivore_data["distribution"],
@@ -246,6 +264,18 @@ class Graphics:
                                                      type=self._img_fmt))
         self._img_ctr += 1
 
+    def on_press(self, event):
+        if event.inaxes == self.geography_ax:
+            loc = (int(event.ydata) + 1, int(event.xdata) + 1)
+            cell = next((cl for cl in self.cell_list if cl.loc[0] == int(event.ydata) + 1
+                         and cl.loc[1] == int(event.xdata) + 1), None)
+            if cell is not None:
+                txt = "Location:" + str(loc) + "    Cell Type:"\
+                      + str(cell.__class__.__name__) +\
+                      "    Herbivores:" + str(
+                    len(cell.herbivores)) + "    Carnivores:" + str(len(cell.carnivores))
+                self.selected_cell_ax_txt.set_text(txt)
+
     def make_movie(self, movie_fmt=None):
         """
         Creates MPEG4 movie from visualization images saved.
@@ -280,7 +310,7 @@ class Graphics:
                 subprocess.check_call([_MAGICK_BINARY,
                                        '-delay', '1',
                                        '-loop', '0',
-                                       '{}_%05d.png'.format(self._img_base),
+                                       '{}_*.png'.format(self._img_base),
                                        '{}.{}'.format(self._img_base, movie_fmt)])
             except subprocess.CalledProcessError as err:
                 raise RuntimeError('ERROR: convert failed with: {}'.format(err))
