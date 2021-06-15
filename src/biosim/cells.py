@@ -15,7 +15,7 @@ class Cell:
     The Cell class.
 
     Attributes
-    ----------------
+    ----------
     loc
         Tuple indicating location of cell on the island, starts at (1,1).
     herbivores
@@ -42,8 +42,8 @@ class Cell:
 
         Parameters
         ----------
-        params
-            Dictionary {'f_max': value} that sets the new default value of fodder in a cell.
+        params : dict
+            Dictionary {'f_max': *value*} that sets the new default value of fodder in a cell.
 
             |
 
@@ -53,11 +53,11 @@ class Cell:
     def add_animal(self, animals):
         """
 
-        Add animals to their corresponding list (herbivores or carnivores).
+        Add animals to their corresponding list (herbivores or carnivores) in Cell class.
 
         Parameters
         ----------
-        animals
+        animals : list
             list of dictionaries that specify the species, age, and weight of each animal.
 
             |
@@ -74,6 +74,16 @@ class Cell:
                 self.carnivores.append(obj)
 
     def animals_feed(self):
+        """
+        Animals feeding in a cell.
+
+            .. seealso::
+                - biosim.animals.Herbivore.feeds()
+                - biosim.animals.Carnivore.feeds()
+
+            |
+
+        """
         for animal in self.herbivores:
             self.food_status = animal.feeds(self.food_status)
         # Sort animals in cell by fitness
@@ -84,33 +94,69 @@ class Cell:
             self.herbivores = [_herb for _herb in self.herbivores if not _herb.dead]
 
     def animals_procreate(self, number_of_herbivores, number_of_carnivores):
+        """
+        Animals procreating in a cell.
+
+            .. seealso::
+                - biosim.animals.Animals.procreation()
+
+            |
+
+        """
         index = 0
-        new_born_herbivores = []
-        new_born_carnivores = []
+        newborn_herbivores = []
+        newborn_carnivores = []
         while index < len(self.herbivores):
             animal = self.herbivores[index]
             baby = animal.procreation(number_of_herbivores)
             if baby is not None:
-                new_born_herbivores.append(baby)
+                newborn_herbivores.append(baby)
             index += 1
         index = 0
         while index < len(self.carnivores):
             animal = self.carnivores[index]
             baby = animal.procreation(number_of_carnivores)
             if baby is not None:
-                new_born_carnivores.append(baby)
+                newborn_carnivores.append(baby)
             index += 1
-        return  new_born_herbivores, new_born_carnivores
+        return newborn_herbivores, newborn_carnivores
 
     def animals_migrate(self):
+        """
+        Animals migrating from one cell to another.
+
+            .. seealso::
+                - biosim.animals.Animals.migration()
+
+            |
+
+        """
         for animal in self.herbivores + self.carnivores:
             animal.migration()
 
     def animals_age(self):
+        """
+        Animals aging.
+
+            .. seealso::
+                - biosim.animals.Animals.commence_aging()
+
+            |
+
+        """
         for animal in self.herbivores + self.carnivores:
             animal.commence_aging()
 
     def animals_death(self):
+        """
+        Animals dying.
+
+            .. seealso::
+                - biosim.animals.Animals.death()
+
+            |
+
+        """
         for animal in self.herbivores + self.carnivores:
             animal.death()
 
@@ -120,47 +166,18 @@ class Cell:
     def reset_cell(self):
         """
 
-        Reset the amount of fodder available in cells.
+        Reset the amount of fodder available in cells to their *f_max*.
 
         |
 
         """
         self.food_status = self.f_max
 
-    # def cell_annual_lifecycle(self):
-    #     """
-    #     Run the annual cycle for a single cell in following order:
-    #         - Feeding
-    #         - Procreating
-    #         - Migration
-    #         - Aging
-    #         - Loss of weight
-    #         - Death
-    #
-    #     Returns
-    #     -------
-    #     list
-    #         Fitness values of herbivores
-    #     list
-    #         Fitness values of carnivores
-    #     list
-    #         Ages of herbivores
-    #     list
-    #         Ages of carnivores
-    #     list
-    #         Weights of herbivores
-    #     list
-    #         Weights of carnivores
-    #
-    #         |
-    #
-    #     """
-    #
-
     def get_migration_possibilities(self):
         """
 
-        Returns a list of tuples indicating locations where animal can migrate (see figure 1)
+        Returns a list of four tuples representing locations where animal can migrate to
+        from the current cell. (see figure 1)
 
         .. figure:: cells.png
             :width: 200
@@ -240,6 +257,9 @@ def set_cell_params(land_type, params):
         {'f_max': value}, specifies the new default value of fodder in
         Lowland and Highland cell types.
 
+        .. seealso::
+            - Cell.update_defaults()
+
         |
 
     """
@@ -269,4 +289,13 @@ def set_cell_params(land_type, params):
 
 
 def update_animal_params(species, params):
+    """
+    Update animal parameters.
+
+        .. seealso::
+            - biosim.animals.set_animal_params()
+
+        |
+
+    """
     set_animal_params(species, params)

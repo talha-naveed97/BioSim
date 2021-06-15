@@ -93,11 +93,10 @@ class Graphics:
         self.plt_fig_title_txt = self.plt_fig_title.text(0.5, 0.5, self.year_template.format(0),
                                                          horizontalalignment='center',
                                                          verticalalignment='center',
-                                                         transform=self.plt_fig_title.transAxes, fontsize=14,
+                                                         transform=self.plt_fig_title.transAxes,
+                                                         fontsize=14,
                                                          fontweight='bold')
         self.plt_fig_title_txt.set_text("Population Dynamics Simulation")
-        manager = plt.get_current_fig_manager()
-        manager.window.showMaximized()
 
         self.img_years = img_years
         if not os.path.exists(self.img_dir):
@@ -281,7 +280,7 @@ class Graphics:
                 subprocess.check_call([_MAGICK_BINARY,
                                        '-delay', '1',
                                        '-loop', '0',
-                                       '{}_*.png'.format(self._img_base),
+                                       '{}_%05d.png'.format(self._img_base),
                                        '{}.{}'.format(self._img_base, movie_fmt)])
             except subprocess.CalledProcessError as err:
                 raise RuntimeError('ERROR: convert failed with: {}'.format(err))
