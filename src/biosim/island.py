@@ -253,7 +253,7 @@ class Island:
             "distribution": carnivore_dist
         }
         self.graphics.update_visualization(year, total_years, cmax_animals, hist_specs, y_max,
-                                           herbivore_date, carnivore_date)
+                                           herbivore_date, carnivore_date,self.cell_list)
 
     def get_distributions(self):
         map_list = self.geo.splitlines()

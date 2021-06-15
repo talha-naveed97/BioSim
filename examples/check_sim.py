@@ -58,8 +58,8 @@ if __name__ == '__main__':
                                             'DeltaPhiMax': 9.})
     sim.set_landscape_parameters('L', {'f_max': 700})
 
-    # sim.simulate(num_years=10)
-    # sim.add_population(population=ini_carns)
-    # sim.simulate(num_years=10)
+    sim.simulate(num_years=15)
+    sim.add_population(population=ini_carns)
+    sim.simulate(num_years=15)
     sim.make_movie()
     input("Enter")
