@@ -44,7 +44,7 @@ class BioSim:
     img_fmt : str
         File type for figures, e.g. ’png’
 
-    img_years : str
+    img_years : int
         Years between visualizations saved to files (default: vis_years)
         If 0 then no images will be saved
 

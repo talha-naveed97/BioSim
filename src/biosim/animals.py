@@ -121,14 +121,17 @@ class Animals:
         |
 
         """
-        if self.weight <= 0:
-            self.fitness = 0
-        else:
-            q_age = 1 / (1 + math.exp(self.guideline_params["phi_age"] *
-                                      (self.age - self.guideline_params["a_half"])))
-            q_weight = 1 / (1 + math.exp(-self.guideline_params["phi_weight"] *
-                                         (self.weight - self.guideline_params["w_half"])))
-            self.fitness = q_age * q_weight
+        try:
+            if self.weight <= 0:
+                self.fitness = 0
+            else:
+                q_age = 1 / (1 + math.exp(self.guideline_params["phi_age"] *
+                                          (self.age - self.guideline_params["a_half"])))
+                q_weight = 1 / (1 + math.exp(-self.guideline_params["phi_weight"] *
+                                             (self.weight - self.guideline_params["w_half"])))
+                self.fitness = q_age * q_weight
+        except RuntimeError as err:
+            raise RuntimeError('ERROR: Failed while executing calculate_fitness(): {}'.format(err))
 
     def procreation(self, cell_animal_count):
         """
@@ -157,22 +160,25 @@ class Animals:
 
 
         """
+        try:
+            birth_prob = 0
+            if cell_animal_count > 1 and self.weight >= self.guideline_params["zeta"] * \
+                    (self.guideline_params["w_birth"] + self.guideline_params["sigma_birth"]):
+                birth_prob = min(1, self.guideline_params["gamma"] *
+                                 self.fitness * (cell_animal_count - 1))
+            if birth_prob > random.random():
+                baby_age = 0
+                baby_weight = random.gauss(self.guideline_params["w_birth"],
+                                           self.guideline_params["sigma_birth"])
+                mother_weight_loss = self.guideline_params["xi"] * baby_weight
+                if self.weight >= mother_weight_loss:
+                    baby = self.__class__(baby_age, baby_weight)
+                    self.weight -= mother_weight_loss
+                    self.calculate_fitness()
+                    return baby
+        except RuntimeError as err:
+            raise RuntimeError('ERROR: Failed while executing procreation(): {}'.format(err))
 
-        birth_prob = 0
-        if cell_animal_count > 1 and self.weight >= self.guideline_params["zeta"] * \
-                (self.guideline_params["w_birth"] + self.guideline_params["sigma_birth"]):
-            birth_prob = min(1, self.guideline_params["gamma"] *
-                             self.fitness * (cell_animal_count - 1))
-        if birth_prob > random.random():
-            baby_age = 0
-            baby_weight = random.gauss(self.guideline_params["w_birth"],
-                                       self.guideline_params["sigma_birth"])
-            mother_weight_loss = self.guideline_params["xi"] * baby_weight
-            if self.weight >= mother_weight_loss:
-                baby = self.__class__(baby_age, baby_weight)
-                self.weight -= mother_weight_loss
-                self.calculate_fitness()
-                return baby
         return None
 
     def migration(self):
@@ -196,11 +202,14 @@ class Animals:
         |
 
         """
-        migration_prob = self.guideline_params["mu"] * self.fitness
-        if migration_prob > random.random():
-            self.can_migrate = True
-        else:
-            self.can_migrate = False
+        try:
+            migration_prob = self.guideline_params["mu"] * self.fitness
+            if migration_prob > random.random():
+                self.can_migrate = True
+            else:
+                self.can_migrate = False
+        except RuntimeError as err:
+            raise RuntimeError('ERROR: Failed while executing migration(): {}'.format(err))
 
     def commence_aging(self):
         """
@@ -217,10 +226,13 @@ class Animals:
         |
 
         """
-        self.age += 1
-        self.weight -= self.weight * self.guideline_params["eta"]
-        self.has_migrated = False
-        self.calculate_fitness()
+        try:
+            self.age += 1
+            self.weight -= self.weight * self.guideline_params["eta"]
+            self.has_migrated = False
+            self.calculate_fitness()
+        except RuntimeError as err:
+            raise RuntimeError('ERROR: Failed while executing commence_aging(): {}'.format(err))
 
     def death(self):
         """
@@ -249,12 +261,15 @@ class Animals:
         |
 
         """
-        if self.weight <= 0:
-            self.dead = True
-        else:
-            death_prob = self.guideline_params["omega"] * (1 - self.fitness)
-            if death_prob > random.random():
+        try:
+            if self.weight <= 0:
                 self.dead = True
+            else:
+                death_prob = self.guideline_params["omega"] * (1 - self.fitness)
+                if death_prob > random.random():
+                    self.dead = True
+        except RuntimeError as err:
+            raise RuntimeError('ERROR: Failed while executing death(): {}'.format(err))
 
 
 class Herbivore(Animals):
@@ -351,13 +366,16 @@ class Herbivore(Animals):
         |
 
         """
-        f = self.guideline_params["F"]
-        if f > cell_food_amount:
-            f = cell_food_amount
-        self.weight += f * self.guideline_params["beta"]
-        self.calculate_fitness()
-        feed_left = cell_food_amount - f
-        return feed_left
+        try:
+            f = self.guideline_params["F"]
+            if f > cell_food_amount:
+                f = cell_food_amount
+            self.weight += f * self.guideline_params["beta"]
+            self.calculate_fitness()
+            feed_left = cell_food_amount - f
+            return feed_left
+        except RuntimeError as err:
+            raise RuntimeError('ERROR: Failed while executing Herbivore.feeds(): {}'.format(err))
 
 
 class Carnivore(Animals):
@@ -464,24 +482,27 @@ class Carnivore(Animals):
         |
 
         """
+        try:
+            amount_eaten = 0
+            for herbivore in herbivores:
+                fitness_difference = self.fitness - herbivore.fitness
+                if self.fitness <= herbivore.fitness:
+                    eating_probability = 0
+                elif 0 < fitness_difference < self.guideline_params["DeltaPhiMax"]:
+                    eating_probability = fitness_difference / self.guideline_params["DeltaPhiMax"]
+                else:
+                    eating_probability = 1
 
-        amount_eaten = 0
-        for herbivore in herbivores:
-            fitness_difference = self.fitness - herbivore.fitness
-            if self.fitness <= herbivore.fitness:
-                eating_probability = 0
-            elif 0 < fitness_difference < self.guideline_params["DeltaPhiMax"]:
-                eating_probability = fitness_difference / self.guideline_params["DeltaPhiMax"]
-            else:
-                eating_probability = 1
+                if eating_probability > random.random():
+                    herbivore.dead = True
+                    self.weight += self.guideline_params["beta"] * herbivore.weight
+                    amount_eaten += herbivore.weight
+                    self.calculate_fitness()
+                    if amount_eaten >= self.guideline_params["F"]:
+                        break
+        except RuntimeError as err:
+            raise RuntimeError('ERROR: Failed while executing Carnivore.feeds(): {}'.format(err))
 
-            if eating_probability > random.random():
-                herbivore.dead = True
-                self.weight += self.guideline_params["beta"] * herbivore.weight
-                amount_eaten += herbivore.weight
-                self.calculate_fitness()
-                if amount_eaten >= self.guideline_params["F"]:
-                    break
         return None
 
 
