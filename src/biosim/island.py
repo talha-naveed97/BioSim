@@ -161,7 +161,7 @@ class Island:
 
     def add_population(self, population):
         """
-        Add population (herbivores and carnivores) to the cells on the island.
+        Add population (herbivores and/or carnivores) to the cells on the island.
 
 
         Parameters

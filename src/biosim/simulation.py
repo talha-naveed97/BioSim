@@ -139,7 +139,7 @@ class BioSim:
             Code letter for landscape
 
         params :  dict
-            Dictrionary with valid parameter specification for landscape
+            Dictionary with valid parameter specification for landscape
 
 
         |
@@ -187,13 +187,17 @@ class BioSim:
 
     def add_population(self, population):
         """
-        Add a population to the island
+        Add population (herbivores and/or carnivores) to the cells on the island.
 
         Parameters
         ----------
-        population : dict
-            List of dictionaries specifying population
+        population : list
+            list of dictionaries where each dictionary has two keys: 'loc' specifying the
+            cell location where animals are to be added, and 'pop' specifying the species,
+            age, and weight of the animals to be added on the island.
 
+        .. seealso::
+                - biosim.Island.add_population(population)
 
         |
 
