@@ -71,6 +71,12 @@ class Animals:
                 - animals.Herbivore()
                 - animals.Carnivore()
 
+        .. code-block:: python
+
+            params = {'zeta': 1.2}
+            Herbivore.update_defaults(params)
+
+
             |
 
         """
@@ -104,6 +110,14 @@ class Animals:
             .. math::
                 q^{\\pm}(a,a_{\\frac{1}{2}},\\phi) =  \\frac{1}{1 + e^{\\pm\\phi(x-x_\\frac{1}{2})}}
 
+
+        .. code-block:: python
+
+            herbivore = Herbivore(age=10, weight =20)
+            herbivore.calculate_fitness()
+            print(herbivore.fitness)
+
+
         |
 
         """
@@ -130,7 +144,17 @@ class Animals:
             Number of animals of a species in a cell. Probability of giving birth is only
             calculated if there are at least two animals of the same species present in a cell.
 
-            |
+
+        .. code-block:: python
+
+            herbivore = Herbivore(age=10, weight =20)
+            baby = herbivore.procreation()
+            if baby is not None:
+                print("baby added")
+                baby_age = baby.age
+
+        |
+
 
         """
 
@@ -159,6 +183,16 @@ class Animals:
 
         and set **can_migrate** as *True* if probability is higher than a random threshold.
 
+        .. code-block:: python
+
+            herbivore = Herbivore(age=10, weight =20)
+            herbivore.migration()
+            if herbivore.can_migrate:
+                print("Animal can migrate")
+            else
+                print("Animal can not migrate")
+
+
         |
 
         """
@@ -171,6 +205,14 @@ class Animals:
     def commence_aging(self):
         """
         Increase animal age by 1 year and recompute animal weight and fitness.
+
+        .. code-block:: python
+
+            herbivore = Herbivore(age=10, weight =20)
+            herbivore.commence_aging()
+            print("Animal Age", herbivore.age)
+            print("Animal Weight", herbivore.weight)
+
 
         |
 
@@ -193,6 +235,16 @@ class Animals:
 
                     \\omega(1 - \\Phi) & \\text{otherwise.}
                 \\end{cases}
+
+        .. code-block:: python
+
+            herbivore = Herbivore(age=10, weight =20)
+            herbivore.death()
+            if herbivore.dead:
+                print("Animal will die")
+            else
+                print("Animal will not die")
+
 
         |
 
@@ -287,6 +339,13 @@ class Herbivore(Animals):
         ----------
         cell_food_amount : float
             The amount of food available in the cell.
+
+
+        .. code-block:: python
+
+            herbivore = Herbivore(age=10, weight =20)
+            herbivore.feeds()
+            print("Animal after weight", herbivore.weight)
 
 
         |
@@ -393,7 +452,16 @@ class Carnivore(Animals):
             The list of herbivores present in the cell. The attribute **dead** is set *True*
             for each herbivores that is killed by the carnivore.
 
-            |
+
+        .. code-block:: python
+
+            carnivore = Carnivore(age=10, weight =20)
+            herbivores = [Herbivore(1, 10) for _ in range(2)]
+            carnivore.feeds(herbivores)
+            print("Animal after weight", carnivore.weight)
+
+
+        |
 
         """
 
@@ -431,7 +499,13 @@ def set_animal_params(species, params):
         .. seealso::
             - Animals.update_defaults()
 
-        |
+
+    .. code-block:: python
+
+        set_animal_params('Herbivore', params = {'age': 10, 'weight': 20})
+
+
+    |
 
     """
     if species == 'Herbivore':
