@@ -9,8 +9,8 @@ from matplotlib import gridspec, rcParams
 
 _FFMPEG_BINARY = 'ffmpeg'
 _MAGICK_BINARY = 'magick'
-rcParams["legend.loc"] = 'upper right'
-rcParams["legend.fontsize"] = 8
+rcParams["legend.loc"] = 'upper left'
+rcParams["legend.fontsize"] = 6
 
 # update this to the directory and file-name beginning
 # for the graphics files
@@ -64,11 +64,23 @@ class Graphics:
         self.img_years = 1
 
     def show_plots(self):
+        """
+                Shows and refreshes plots
+
+        |
+
+        """
         self.fig.canvas.flush_events()
         plt.pause(1e-6)
 
     def setup_visualization(self, total_years, cmap, hist_specs, y_max,
                             img_years, map_rgb, herb_dist, carn_dist):
+        """
+                Setup graphics
+
+        |
+
+        """
         self.fig = plt.figure(constrained_layout=True)
         self._gs = gridspec.GridSpec(ncols=4, nrows=3, figure=self.fig)
         self.geography_ax = self.fig.add_subplot(self._gs[0:2, 1:3])
@@ -109,10 +121,7 @@ class Graphics:
                                                                transform=self.selected_cell_ax.transAxes, fontsize=8,
                                                                )
         self.selected_cell_ax_txt.set_text("")
-        # self.select_text.set_text("Population Dynamics Simulation")
-        # manager = plt.get_current_fig_manager()
-        # manager.window.showMaximized()
-        self.fig.canvas.manager.full_screen_toggle()
+        #self.fig.canvas.manager.full_screen_toggle()
 
         self.img_years = img_years
         if not os.path.exists(self.img_dir):
@@ -122,6 +131,12 @@ class Graphics:
         self.fig.canvas.mpl_connect('button_press_event', self.on_press)
 
     def make_map(self, map_rgb):
+        """
+                Makes map for the island
+
+        |
+
+        """
         self.geography_ax.imshow(map_rgb)
         update_plot_tick_labels(self.geography_ax, map_rgb)
         self.geography_ax.set_title("Island", fontweight='bold')
@@ -138,6 +153,12 @@ class Graphics:
 
     def update_visualization(self, year, total_years, cmax_animals, hist_specs, y_max,
                              herbivore_data, carnivore_data, cell_list):
+        """
+            Updates graphics based on current state of the simulation
+
+        |
+
+        """
         self.cell_list = cell_list
         self.update_number_of_species_graph(False, year, total_years, herbivore_data["count"],
                                             carnivore_data["count"], y_max)
@@ -151,10 +172,17 @@ class Graphics:
                                   carnivore_data["age"], hist_specs['age'])
         self.year_txt.set_text(self.year_template.format(year))
         self.show_plots()
-        self._save_graphics(year)
+        if self.img_years > 0:
+            self._save_graphics(year)
 
     def update_number_of_species_graph(self, is_init, current_year, total_years,
                                        herbivore_count, carnivores_count, y_max):
+        """
+            Updates number of species count graph
+
+        |
+
+        """
         max_count = max(herbivore_count, carnivores_count)
         if y_max is not None:
             self.max_species_count = y_max
@@ -163,10 +191,10 @@ class Graphics:
             self.species_count_ax.set_ylim(0, self.max_species_count)
             self.line_herbivores = self.species_count_ax.plot(np.arange(total_years),
                                                               np.full(total_years, np.nan),
-                                                              'b-', lw=1, label='Herbivores')[0]
+                                                              'b-', lw=1, label='H')[0]
             self.line_carnivores = self.species_count_ax.plot(np.arange(total_years),
                                                               np.full(total_years, np.nan),
-                                                              'r-', lw=1, label='Carnivores')[0]
+                                                              'r-', lw=1, label='C')[0]
             self.species_count_ax.set_title("Animal Count", fontstyle='italic')
             self.species_count_ax.patch.set_facecolor('gainsboro')
             self.species_count_ax.legend()
@@ -196,6 +224,12 @@ class Graphics:
         self.line_carnivores.set_ydata(y_data_carnivore)
 
     def update_distribution_map(self, herbivore_map, carnivore_map, cmax_animals):
+        """
+            Updates distribution maps
+
+        |
+
+        """
         if self.herb_dist_axis is not None:
             self.herb_dist_axis.set_data(herbivore_map)
             self.herbivore_dist_ax.set_title("Herbivore Distribution", fontstyle='italic')
@@ -226,6 +260,12 @@ class Graphics:
 
     def update_fitness_histogram(self, fitness_values_herbivores,
                                  fitness_values_carnivores, fitness_hist_specs):
+        """
+            Updates fitness histograms
+
+        |
+
+        """
         self.fitness_hist_ax.clear()
         self.fitness_hist_ax.set_title("Fitness", fontstyle='italic')
         bins = get_bins(fitness_hist_specs)
@@ -235,6 +275,12 @@ class Graphics:
         self.fitness_hist_ax.patch.set_facecolor('gainsboro')
 
     def update_age_histogram(self, age_values_herbivores, age_values_carnivores, age_hist_specs):
+        """
+            Updates age histograms
+
+        |
+
+        """
         self.age_hist_ax.clear()
         self.age_hist_ax.set_title("Age", fontstyle='italic')
         bins = get_bins(age_hist_specs)
@@ -245,17 +291,27 @@ class Graphics:
 
     def update_weight_histogram(self, weight_values_herbivores,
                                 weight_values_carnivores, weight_hist_specs):
+        """
+            Updates weight histograms
+
+        |
+
+        """
         self.weight_hist_ax.clear()
         self.weight_hist_ax.set_title("Weight", fontstyle='italic')
         bins = get_bins(weight_hist_specs)
         self.weight_hist_ax.hist((weight_values_herbivores, weight_values_carnivores), bins,
                                  (0, weight_hist_specs['max']), histtype='step', linewidth=1,
-                                 label=('Herbivores', 'Carnivores'), color=('b', 'r'))
+                                 label=('H', 'C'), color=('b', 'r'))
         self.weight_hist_ax.patch.set_facecolor('gainsboro')
 
     def _save_graphics(self, year):
-        """Saves graphics to file if file name given."""
+        """
+            Saves graphics to file if file name given.
 
+        |
+
+        """
         if self._img_base is None or year % self.img_years != 0:
             return
 
@@ -319,10 +375,22 @@ class Graphics:
 
 
 def get_bins(spec):
+    """
+        Calculate bins count
+
+    |
+
+    """
     return int(spec['max'] / spec['delta'])
 
 
 def update_plot_tick_labels(plot, data):
+    """
+        Set ticks labels for graphs
+
+    |
+
+    """
     plot.set_xticks(np.arange(0, len(data[0]), 5))
     plot.set_xticklabels(np.arange(1, len(data[0]) + 1, 5))
     plot.set_yticks(np.arange(0, len(data), 2))

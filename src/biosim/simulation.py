@@ -46,6 +46,7 @@ class BioSim:
 
     img_years : str
         Years between visualizations saved to files (default: vis_years)
+        If 0 then no images will be saved
 
     log_file : str
         If given, write animal counts to this file
@@ -169,10 +170,10 @@ class BioSim:
         for x in range(self.current_year, self.num_years):
             self.current_year = x + 1
             self.island.commence_annual_cycle()
-            counts = self.num_animals_per_species
+            animal_counts = self.num_animals_per_species
             if self.vis_years > 0 and self.current_year % self.vis_years == 0:
                 self.island.update_visualization(self.current_year, self.num_years,
-                                                 counts['Herbivore'], counts['Carnivore'],
+                                                 animal_counts,
                                                  self.c_max_animal, self.hist_specs,
                                                  self.y_max_animals)
 
