@@ -71,13 +71,14 @@ class Animals:
                 - animals.Herbivore()
                 - animals.Carnivore()
 
+
         .. code-block:: python
 
             params = {'zeta': 1.2}
             Herbivore.update_defaults(params)
 
 
-            |
+        |
 
         """
 
