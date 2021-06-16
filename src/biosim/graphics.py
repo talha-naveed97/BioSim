@@ -38,7 +38,7 @@ class Graphics:
         self.year_counter = None
         self.plt_fig_title = None
         self.plt_fig_title_txt = None
-        self.selected_cell_ax = None
+        self.slctd_cl_ax = None
         self.selected_cell_ax_txt = None
         self.plt_fig_title_txt = None
         self.year_txt = None
@@ -92,8 +92,8 @@ class Graphics:
         self.weight_hist_ax = self.fig.add_subplot(self._gs[2, 3])
         self._map_legend_ax = self.fig.add_axes([0.36, 0.22, 0.43, 0.2])
         self._map_legend_ax.axis('off')
-        self.selected_cell_ax = self.fig.add_axes([0.33, 0.28, 0.43, 0.1])
-        self.selected_cell_ax.axis('off')
+        self.slctd_cl_ax = self.fig.add_axes([0.33, 0.28, 0.43, 0.1])
+        self.slctd_cl_ax.axis('off')
         self.year_counter = self.fig.add_axes([0.4, 0.05, 0.3, 0.2])  # llx, lly, w, h
         self.year_counter.axis('off')  # turn off coordinate system
         self.plt_fig_title = self.fig.add_axes([0.3, 0., 0.5, 0.2])  # llx, lly, w, h
@@ -111,17 +111,20 @@ class Graphics:
         self.plt_fig_title_txt = self.plt_fig_title.text(0.5, 0.5, self.year_template.format(0),
                                                          horizontalalignment='center',
                                                          verticalalignment='center',
-                                                         transform=self.plt_fig_title.transAxes, fontsize=14,
+                                                         transform=self.plt_fig_title.transAxes,
+                                                         fontsize=14,
                                                          fontweight='bold')
-        self.plt_fig_title_txt.set_text("Population Dynamics Simulation")
+        self.plt_fig_title_txt.set_text("BioSim: Population Dynamics Simulation")
 
-        self.selected_cell_ax_txt = self.selected_cell_ax.text(0.5, 0.5, self.year_template.format(0),
-                                                               horizontalalignment='center',
-                                                               verticalalignment='center',
-                                                               transform=self.selected_cell_ax.transAxes, fontsize=8,
-                                                               )
+        self.selected_cell_ax_txt = self.slctd_cl_ax.text(0.5, 0.5,
+                                                          self.year_template.format(0),
+                                                          horizontalalignment='center',
+                                                          verticalalignment='center',
+                                                          transform=self.slctd_cl_ax.transAxes,
+                                                          fontsize=8
+                                                          )
         self.selected_cell_ax_txt.set_text("")
-        #self.fig.canvas.manager.full_screen_toggle()
+        # self.fig.canvas.manager.full_screen_toggle()
 
         self.img_years = img_years
         if not os.path.exists(self.img_dir):

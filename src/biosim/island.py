@@ -195,8 +195,8 @@ class Island:
             for record in population:
                 loc = record['loc']
                 animals = record['pop']
-                cell = next((item for item in self.cell_list if
-                      item.loc[0] == loc[0] and item.loc[1] == loc[1]), None)
+                cell = next((item for item in self.cell_list if item.loc[0] == loc[0]
+                             and item.loc[1] == loc[1]), None)
                 if cell is None:
                     raise RuntimeError("Cell Not Found!", cell)
                 cell.add_animal(animals)
@@ -244,10 +244,10 @@ class Island:
             for cell in self.cell_list:
                 if not cell.allows_animal:
                     continue
-                newborn_herbivores, newborn_carnivores = cell.animals_procreate(len(cell.herbivores),
-                                                                                len(cell.carnivores))
-                cell.herbivores.extend(newborn_herbivores)
-                cell.carnivores.extend(newborn_carnivores)
+                baby_herbivores, baby_carnivores = cell.animals_procreate(len(cell.herbivores),
+                                                                          len(cell.carnivores))
+                cell.herbivores.extend(baby_herbivores)
+                cell.carnivores.extend(baby_carnivores)
 
             for cell in self.cell_list:
                 if not cell.allows_animal:
@@ -306,7 +306,9 @@ class Island:
                 if animal.can_migrate:
                     possible_locations = cell.get_migration_possibilities()
                     migration_destination = self.get_random_cell(possible_locations)
-                    migrating_cell = next((item for item in self.cell_list if item.loc[0] == migration_destination[0] and item.loc[1] == migration_destination[1]), None)
+                    migrating_cell = next((item for item in self.cell_list
+                                           if item.loc[0] == migration_destination[0]
+                                           and item.loc[1] == migration_destination[1]), None)
                     if migrating_cell is None:
                         raise RuntimeError("Cell Not Found!", cell)
                     if not migrating_cell.allows_animal:
@@ -510,7 +512,8 @@ class Island:
                 chars = len(line)
                 for y in range(chars):
                     loc = (x + 1, y + 1)
-                    cell = next((item for item in self.cell_list if item.loc[0] == loc[0] and item.loc[1] == loc[1]), None)
+                    cell = next((item for item in self.cell_list if item.loc[0] == loc[0] and
+                                 item.loc[1] == loc[1]), None)
                     if cell is None:
                         raise RuntimeError("Cell Not Found!", cell)
                     row_list_herbivore.append(len(cell.herbivores))

@@ -53,10 +53,9 @@ if __name__ == '__main__':
                              'age': {'max': 60.0, 'delta': 2},
                              'weight': {'max': 60, 'delta': 2}},
                  img_dir='results',
-                 img_base='sample')
+                 img_base='sample',
+                 img_years=0)
 
     sim.simulate(400)
-
-    sim.make_movie()
-
+    # sim.make_movie()   # Uncomment for making movie, set img_years (int) >0
     input('Press ENTER')

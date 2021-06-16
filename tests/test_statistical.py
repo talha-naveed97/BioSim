@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+
+"""
+Statisitical tests for BioSim, INF200 June 2021.
+"""
+
 from biosim.simulation import BioSim
 import textwrap
 from scipy import stats

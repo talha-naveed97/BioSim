@@ -180,8 +180,8 @@ class BioSim:
                                                  self.c_max_animal, self.hist_specs,
                                                  self.y_max_animals)
 
-            herbivore_count.append(counts['Herbivore'])
-            carnivore_count.append(counts['Carnivore'])
+            herbivore_count.append(animal_counts['Herbivore'])
+            carnivore_count.append(animal_counts['Carnivore'])
 
         return herbivore_count, carnivore_count
 

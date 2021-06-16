@@ -93,7 +93,7 @@ class Cell:
         try:
             for x in animals:
                 if x['species'] not in ['Herbivore', 'Carnivore']:
-                    raise KeyError('Invalid key for species. Valid keys are: Herbivore and Carnivore ')
+                    raise KeyError('Invalid species. Valid keys are: Herbivore and Carnivore')
                 elif x['species'] == 'Herbivore':
                     obj = Herbivore(x['age'], x['weight'])
                     self.herbivores.append(obj)
