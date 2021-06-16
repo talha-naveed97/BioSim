@@ -196,8 +196,10 @@ class BioSim:
             cell location where animals are to be added, and 'pop' specifying the species,
             age, and weight of the animals to be added on the island.
 
+
         .. seealso::
                 - biosim.Island.add_population(population)
+
 
         |
 
